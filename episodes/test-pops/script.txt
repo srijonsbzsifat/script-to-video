@@ -1,0 +1,5 @@
+Every morning, Sam wakes up and checks his {pop:phone.svg @right}phone.
+
+Soon, an hour has {punch}vanished into {pop:clock.svg @left mult}the scroll.
+
+But a simple rule fixes it: phone out of the bedroom, and {swap:s03_happy.svg}the day belongs to {pop:sun.svg @center 2s}Sam again.

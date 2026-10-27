@@ -1,0 +1,12 @@
+.cache/
+node_modules/
+__pycache__/
+# generated per episode
+episodes/*/hf/
+episodes/*/final.mp4
+episodes/*/timings/
+episodes/*/timings.json
+# local episodes are not part of the repo; only the sample is
+episodes/*
+!episodes/test-pops/
+!episodes/.gitkeep
