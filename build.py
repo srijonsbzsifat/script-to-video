@@ -1,4 +1,4 @@
-"""Stickman explainer builder: episode folder -> final.mp4 via HyperFrames.
+"""Script-to-video builder: episode folder -> final.mp4 via HyperFrames.
 
   python -I build.py EPISODE_DIR [--no-render]
   python -I build.py --new NAME            create episodes/NAME with script.txt + layers/

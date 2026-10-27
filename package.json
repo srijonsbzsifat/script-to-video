@@ -1,8 +1,8 @@
 {
-  "name": "stickman-workflow",
+  "name": "script-to-video",
   "private": true,
   "version": "0.1.0",
-  "description": "Narration + script + images -> 1080p explainer video with pops, captions and SFX, on HyperFrames",
+  "description": "Narration + script + images -> 1080p video with pops, captions and SFX, on HyperFrames",
   "scripts": {
     "setup": "python -I setup.py",
     "doctor": "hyperframes doctor"

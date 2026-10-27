@@ -1,8 +1,8 @@
-# stickman-workflow
+# script-to-video
 
-Turn **narration + script + images** into a finished 1080p30 explainer video, with word-timed captions, springy
-"pop" elements, scene swaps, camera punches and sound effects. Built on [HyperFrames](https://hyperframes.heygen.com)
-(HTML + GSAP rendered to MP4). Works with any cartoon style: the pipeline only sees PNGs.
+Turn **narration + script + images** into a finished 1080p30 video (explainers, stories, tutorials, shorts-style
+long-form...), with word-timed captions, springy "pop" elements, scene swaps, camera punches and sound effects. Built on [HyperFrames](https://hyperframes.heygen.com)
+(HTML + GSAP rendered to MP4). Style-agnostic: stickman, cartoon, whiteboard, illustration, photos or slides. The pipeline only sees images.
 
 ```
 narration (AI Studio, etc.) -> script.txt -> images (Flow/Imagen) -> build.py -> final.mp4
