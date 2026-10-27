@@ -25,8 +25,13 @@ node = shutil.which("node")
 nv = subprocess.run([node, "-v"], capture_output=True, text=True).stdout.strip() if node else ""
 need(node and int(nv.lstrip("v").split(".")[0]) >= 22, f"Node 22+ (have {nv or 'none'})")
 need(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg + ffprobe on PATH")
-models = os.environ.get("WHISPER_MODELS") or os.path.expandvars(r"%LOCALAPPDATA%\app.concat.editor\whisper-models")
-need((pathlib.Path(models) / "ggml-small.en.bin").exists(), f"whisper model ggml-small.en.bin in {models} (set WHISPER_MODELS)")
+models = os.environ.get("WHISPER_MODELS") or (os.path.expandvars(r"%LOCALAPPDATA%\app.concat.editor\whisper-models") if os.name == "nt" else os.path.expanduser("~/whisper-models"))
+have_model = (pathlib.Path(models) / "ggml-small.en.bin").exists()
+need(have_model, f"whisper model ggml-small.en.bin in {models} (set WHISPER_MODELS to use another folder)")
+if not have_model:
+    print(f'     get it:  mkdir -p "{models}" && curl -L -o "{models}/ggml-small.en.bin" https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin')
+flt = subprocess.run(["ffmpeg", "-hide_banner", "-filters"], capture_output=True, text=True).stdout if shutil.which("ffmpeg") else ""
+need(" whisper " in flt, "ffmpeg built with the `whisper` filter (ffmpeg 8+; check: ffmpeg -filters | grep whisper)")
 if not ok:
     sys.exit("fix the MISSING items above, then re-run setup.py")
 

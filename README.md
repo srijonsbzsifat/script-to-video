@@ -25,6 +25,17 @@ Chrome (~270 MB) is cached once by HyperFrames in your user profile, outside thi
 - `docs/hyperframes/`: offline snapshot of the CLI docs (data attributes, GSAP, compositions, rendering, troubleshooting, `--help`)
 - Use the CLI directly: `node_modules/.bin/hyperframes <command>` (`preview`, `check`, `snapshot`, `catalog`, `doctor`, ...); open any episode's `hf/` project with `preview`
 
+## Setting up on another machine (macOS / Linux / Windows)
+```bash
+git clone https://github.com/srijonsbzsifat/script-to-video.git && cd script-to-video
+brew install node ffmpeg                 # macOS (Node 22+, ffmpeg 8+ with the whisper filter)
+mkdir -p ~/whisper-models && curl -L -o ~/whisper-models/ggml-small.en.bin   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin
+python3 -I setup.py                      # set WHISPER_MODELS=/path to keep the model elsewhere
+python3 -I build.py episodes/test-pops   # sample render
+```
+Use `python3` instead of `python` on macOS/Linux. If `setup.py` reports the ffmpeg `whisper` filter missing,
+install a newer ffmpeg build that includes it.
+
 ## Quick start
 ```bash
 python -I build.py --new my-episode              # creates episodes/my-episode/{script.txt,layers/}
