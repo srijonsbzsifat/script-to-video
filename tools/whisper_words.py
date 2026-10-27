@@ -14,7 +14,7 @@ run both and align tokens to the segment words by character count.
 import argparse, json, os, re, subprocess, sys, tempfile
 
 TICKS = 254016000000
-MODELS = os.environ.get("WHISPER_MODELS") or (os.path.expandvars(r"%LOCALAPPDATA%pp.concat.editor\whisper-models") if os.name == "nt" else os.path.expanduser("~/whisper-models"))  # folder holding ggml-small.en.bin
+MODELS = os.environ.get("WHISPER_MODELS") or (os.path.expandvars(r"%LOCALAPPDATA%\app.concat.editor\whisper-models") if os.name == "nt" else os.path.expanduser("~/whisper-models"))  # folder holding ggml-small.en.bin
 
 
 def run(media, model, maxlen, dest):
