@@ -8,16 +8,25 @@ long-form...), with word-timed captions, springy "pop" elements, scene swaps, ca
 narration (AI Studio, etc.) -> script.txt -> images (Flow/Imagen) -> build.py -> final.mp4
 ```
 
-## Requirements and setup
-- Python 3.11+, FFmpeg/ffprobe on PATH, Node 22+
-- A whisper ggml model `ggml-small.en.bin` in a folder; point `WHISPER_MODELS` at it
-  (default: `%LOCALAPPDATA%\app.concat.editor\whisper-models`). English narration only.
-- No pip packages. Everything else is pinned and installed by one command:
-
+## Setup (check first, install only what is missing)
+Your machine may already have the tools. **Run the check first, before installing anything:**
 ```bash
-python -I setup.py     # checks the above, npm-installs pinned hyperframes + gsap, fetches HyperFrames' headless Chrome, runs doctor
+python3 -I setup.py        # `python` on Windows
 ```
-Chrome (~270 MB) is cached once by HyperFrames in your user profile, outside this repo.
+It looks for what you already have and reuses it:
+
+| Needed | How it is checked | If present | If missing |
+|---|---|---|---|
+| Python 3.11+, Node 22+ | version check | left alone | prints an install command |
+| ffmpeg + ffprobe | on PATH | reused as is | prints an install command |
+| ffmpeg `whisper` filter | `ffmpeg -filters` | reused (this is the only whisper component; no separate whisper app or Python package) | tells you to get ffmpeg 8+ with it |
+| whisper model `ggml-small.en.bin` | searched in `WHISPER_MODELS`, `~/whisper-models`, `~/.cache/whisper*`, `~/whisper.cpp/models`, the FilmCraft folder | reused from wherever it is | prints the one `curl` command |
+| `hyperframes` + `gsap` (npm, pinned) | `node_modules` version check | skipped if already at the pinned versions | `npm ci` |
+| HyperFrames headless Chrome | `hyperframes browser ensure` | reused if cached | downloaded once (~270 MB, outside this repo) |
+
+`setup.py` never installs or downloads ffmpeg, Node or whisper models itself: it only tells you what to run for
+the items marked MISSING, and re-running it after that is safe. English narration only. To keep a model in a
+custom folder, set `WHISPER_MODELS=/that/folder`. No pip packages are needed.
 
 ## Everything HyperFrames, in the repo
 - `package.json` / `package-lock.json`: pinned `hyperframes@0.8.206` and `gsap@3.14.2` (local, no CDN, no npx-on-demand)
@@ -28,13 +37,12 @@ Chrome (~270 MB) is cached once by HyperFrames in your user profile, outside thi
 ## Setting up on another machine (macOS / Linux / Windows)
 ```bash
 git clone https://github.com/srijonsbzsifat/script-to-video.git && cd script-to-video
-brew install node ffmpeg                 # macOS (Node 22+, ffmpeg 8+ with the whisper filter)
-mkdir -p ~/whisper-models && curl -L -o ~/whisper-models/ggml-small.en.bin   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin
-python3 -I setup.py                      # set WHISPER_MODELS=/path to keep the model elsewhere
-python3 -I build.py episodes/test-pops   # sample render
+python3 -I setup.py                      # 1. check what you already have; it prints commands ONLY for what is missing
+#   ...run just those commands (e.g. brew install ffmpeg, or the model curl), then re-run setup.py until it says "ready"
+python3 -I build.py episodes/test-pops   # 2. sample render
 ```
-Use `python3` instead of `python` on macOS/Linux. If `setup.py` reports the ffmpeg `whisper` filter missing,
-install a newer ffmpeg build that includes it.
+Use `python3` instead of `python` on macOS/Linux. Do not run `brew install` or download a model up front: if ffmpeg
+(with the `whisper` filter) and a `ggml-small.en.bin` model are already there, they are used as they are.
 
 ## Quick start
 ```bash

@@ -14,7 +14,18 @@ run both and align tokens to the segment words by character count.
 import argparse, json, os, re, subprocess, sys, tempfile
 
 TICKS = 254016000000
-MODELS = os.environ.get("WHISPER_MODELS") or (os.path.expandvars(r"%LOCALAPPDATA%\app.concat.editor\whisper-models") if os.name == "nt" else os.path.expanduser("~/whisper-models"))  # folder holding ggml-small.en.bin
+def find_models_dir(name="ggml-small.en.bin"):
+    """First known folder that already holds the model, so an existing one is reused and never re-downloaded."""
+    home = os.path.expanduser("~")
+    for d in (os.environ.get("WHISPER_MODELS"), os.path.expandvars(r"%LOCALAPPDATA%\app.concat.editor\whisper-models"),
+              os.path.join(home, "whisper-models"), os.path.join(home, ".cache", "whisper"), os.path.join(home, ".cache", "whisper.cpp"),
+              os.path.join(home, "whisper.cpp", "models"), "/opt/homebrew/share/whisper-cpp", "/usr/local/share/whisper-cpp"):
+        if d and os.path.isfile(os.path.join(d, name)):
+            return d
+    return os.environ.get("WHISPER_MODELS") or os.path.join(home, "whisper-models")  # not found: where to put it
+
+
+MODELS = find_models_dir()
 
 
 def run(media, model, maxlen, dest):
