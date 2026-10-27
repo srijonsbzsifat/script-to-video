@@ -8,11 +8,22 @@ Turn **narration + script + images** into a finished 1080p30 explainer video, wi
 narration (AI Studio, etc.) -> script.txt -> images (Flow/Imagen) -> build.py -> final.mp4
 ```
 
-## Requirements
-- Python 3.11+, FFmpeg/ffprobe on PATH, Node 22+ (npx), Chrome (HyperFrames downloads its own headless Chrome, ~270 MB)
+## Requirements and setup
+- Python 3.11+, FFmpeg/ffprobe on PATH, Node 22+
 - A whisper ggml model `ggml-small.en.bin` in a folder; point `WHISPER_MODELS` at it
   (default: `%LOCALAPPDATA%\app.concat.editor\whisper-models`). English narration only.
-- No pip packages. First run downloads `hyperframes@0.8.206` through npx (pinned for identical re-renders).
+- No pip packages. Everything else is pinned and installed by one command:
+
+```bash
+python -I setup.py     # checks the above, npm-installs pinned hyperframes + gsap, fetches HyperFrames' headless Chrome, runs doctor
+```
+Chrome (~270 MB) is cached once by HyperFrames in your user profile, outside this repo.
+
+## Everything HyperFrames, in the repo
+- `package.json` / `package-lock.json`: pinned `hyperframes@0.8.206` and `gsap@3.14.2` (local, no CDN, no npx-on-demand)
+- `.claude/skills/`: HeyGen's agent skills (`hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `media-use`), so an agent opening this repo knows the framework
+- `docs/hyperframes/`: offline snapshot of the CLI docs (data attributes, GSAP, compositions, rendering, troubleshooting, `--help`)
+- Use the CLI directly: `node_modules/.bin/hyperframes <command>` (`preview`, `check`, `snapshot`, `catalog`, `doctor`, ...); open any episode's `hf/` project with `preview`
 
 ## Quick start
 ```bash
@@ -61,6 +72,10 @@ and the CSS for pops (`img.clip.pop`, 560 px box).
 ## Layout
 ```
 build.py             the whole pipeline
+setup.py             one-time dependency setup and checks
+package.json         pinned hyperframes + gsap
+.claude/skills/      HyperFrames agent skills
+docs/hyperframes/    offline CLI docs
 tools/whisper_words.py   word-level timestamps from a local ggml whisper model
 template/            HyperFrames project files copied into every episode's hf/
 episodes/            your episodes (git-ignored, except the sample)

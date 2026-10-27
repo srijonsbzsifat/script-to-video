@@ -1,0 +1,14 @@
+{
+  "name": "stickman-workflow",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Narration + script + images -> 1080p explainer video with pops, captions and SFX, on HyperFrames",
+  "scripts": {
+    "setup": "python -I setup.py",
+    "doctor": "hyperframes doctor"
+  },
+  "devDependencies": {
+    "gsap": "3.14.2",
+    "hyperframes": "0.8.206"
+  }
+}

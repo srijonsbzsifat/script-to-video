@@ -15,6 +15,7 @@ import difflib, json, os, pathlib, re, shutil, subprocess, sys
 HERE = pathlib.Path(__file__).parent
 WHISPER = HERE / "tools" / "whisper_words.py"
 CACHE = HERE / ".cache"
+HF = HERE / "node_modules" / ".bin" / ("hyperframes.cmd" if os.name == "nt" else "hyperframes")   # pinned in package.json
 GROUP = 3            # words per caption group
 HOLD = 1.2           # a group stays up at least this long (bounded by the next group)
 FADE = 0.3           # crossfade between scenes
@@ -58,6 +59,8 @@ def align(script_words, asr):
 
 
 def main(ep, render=True):
+    if not HF.exists():
+        sys.exit("HyperFrames is not installed: run  python -I setup.py")
     ep = pathlib.Path(ep).resolve()
     audio = next((p for e in ("wav", "mp3", "m4a", "flac", "ogg") for p in ep.glob(f"narration.{e}")), None)
     if not audio:
@@ -112,6 +115,7 @@ def main(ep, render=True):
     (hf / "assets").mkdir(parents=True, exist_ok=True)
     for f in ("hyperframes.json", "meta.json", "package.json"):
         shutil.copy(HERE / "template" / f, hf / f)
+    shutil.copy(HERE / "node_modules" / "gsap" / "dist" / "gsap.min.js", hf / "assets" / "gsap.min.js")  # vendored: no CDN at render time
     shutil.copy(audio, hf / "assets" / ("narration" + audio.suffix))
     for p in imgs:
         shutil.copy(p, hf / "assets" / p.name)
@@ -188,7 +192,7 @@ def main(ep, render=True):
 
     html = f"""<!doctype html>
 <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=1920, height=1080" />
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="assets/gsap.min.js"></script>
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 html,body{{width:1920px;height:1080px;overflow:hidden;background:#111}}
@@ -217,8 +221,7 @@ tl.seek(0);
 
     env = dict(os.environ, npm_config_cache=str(CACHE / "npm"), PUPPETEER_CACHE_DIR=str(CACHE / "puppeteer"),
                XDG_CACHE_HOME=str(CACHE / "xdg"), npm_config_update_notifier="false")
-    npx = shutil.which("npx") or "npx.cmd"
-    subprocess.run([npx, "--yes", "hyperframes@0.8.206", "check", "--json"], cwd=hf, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")  # nonzero on warnings; judged from the report below
+    subprocess.run([HF, "check", "--json"], cwd=hf, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")  # nonzero on warnings; judged from the report below
     rep = max((hf / ".hyperframes/artifacts/checks").glob("*.json"), key=os.path.getmtime)
     d = json.load(open(rep, encoding="utf-8"))
     errs = [x for v in d.values() if isinstance(v, dict) for x in v.get("findings", []) if x["severity"] == "error"]
@@ -228,7 +231,7 @@ tl.seek(0);
         sys.exit("check failed")
     print(f"check ok: {len(imgs)} scenes, {len(groups)} caption groups, {end:.1f}s")
     if render:
-        run([npx, "--yes", "hyperframes@0.8.206", "render", "--output", str(ep / "final.mp4")], cwd=hf, env=env)
+        run([HF, "render", "--output", str(ep / "final.mp4")], cwd=hf, env=env)
         print("rendered", ep / "final.mp4")
         # guard: narration must still be audible in the last 1.5 s of speech (word starts from whisper can run late)
         r = subprocess.run(["ffmpeg", "-hide_banner", "-ss", f"{max(W[-1][1] - 1.5, 0):.2f}", "-t", "1.5", "-i", str(ep / "final.mp4"),
