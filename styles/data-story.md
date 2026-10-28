@@ -35,7 +35,7 @@ common editorial pattern (dark ink + one accent per idea), nothing here copies a
 - Narration always louder than effects.
 
 ## Build notes (HyperFrames)
-- Implemented in `styles/data_story.py`. Episode = `script.txt` + narration + `scenes.json` (one spec per scene; `on` = spoken word that triggers it). Sample: `episodes/test-data`. Types built: claim, number, bar, line, takeaway.
+- Implemented in `styles/data_story.py`. Episode = `script.txt` + narration + `scenes.json` (one spec per scene; `on` = spoken word that triggers it). Sample: `examples/data-story`. Types built: claim, number, bar, line, takeaway.
 - One scene = one HTML section with its own GSAP timeline built from the word times (`timings.json`); same pattern as `build.py`'s captions and pops.
 - Draw charts as inline SVG so strokes can animate (`stroke-dashoffset`) and text stays sharp; numbers via a GSAP tween on a counter object.
 - Vertical (9:16): same scenes, stack columns vertically, 96 px side margins, headline max 6 words per line.

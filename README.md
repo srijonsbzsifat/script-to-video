@@ -77,7 +77,8 @@ Sam checks his {pop:phone.png @right}phone.
 |---|---|
 | `{pop:file @left\|@center\|@right [2s] [mult]}` | object springs in (scale 0 -> ~1.1 -> 1 in 0.28 s) with a pop sound. `2s` = show for 2 s (default: until the scene ends). `mult` = multiply blend, so a white background on line art disappears |
 | `{swap:file}` | crossfade the scene image to another image (pose change) |
-| `{punch}` | quick 7% camera zoom with a whoosh |
+| `{punch}` | quick 7% camera zoom with a whoosh (use only for the 1-2 biggest moments) |
+| `{zoom}` | same zoom, silent: for rhythm without sound |
 
 The build prints `RHYTHM:` warnings when nothing visual changes for more than 4.5 s: add a tag there.
 

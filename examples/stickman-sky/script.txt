@@ -1,0 +1,21 @@
+Look up on a clear day. The sky is blue. But why is it not green, or purple?
+
+{pop:sun.svg @right}Sunlight looks white, but it is really every colour of the rainbow mixed together.
+
+{pop:waves.svg @center}Each colour travels as a wave. Red waves are long and lazy. Blue waves are short and quick.
+
+When sunlight hits the air, it bumps into {pop:molecule.svg @left}tiny gas molecules.
+
+Long red waves slide straight past them.
+
+But short blue waves get bounced around in every direction. Scientists call this scattering.
+
+So blue light reaches your eyes from every part of the sky.
+
+And purple? The sun gives off less of it, and our eyes see it poorly.
+
+At sunset, the light must cross much more air. The blue is scattered away, and the {pop:sunset.svg @right}reds and oranges are left.
+
+So the sky is blue because small waves scatter the most.
+
+Now you know. Look up, and tell a friend.

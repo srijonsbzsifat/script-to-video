@@ -1,0 +1,9 @@
+{"style": "data-story", "captions": false, "scenes": [
+ {"type": "claim", "text": "Your phone is quietly stealing your evenings", "accent_word": "stealing", "accent": "coral"},
+ {"type": "number", "value": 4.5, "decimals": 1, "suffix": " h", "label": "AVERAGE DAILY SCREEN TIME (EXAMPLE)", "chip": "up from 2.1 h in 2015", "on": "four", "accent": "teal", "source": "example data, not real figures"},
+ {"type": "bar", "title": "Where the minutes go", "accent_word": "minutes", "accent": "sand", "unit": " min", "highlight": 0,
+  "items": [["Social", 96], ["Video", 74], ["Games", 41], ["Mail", 18]], "on": ["social", "video", "games", "mail"], "source": "example data, not real figures"},
+ {"type": "line", "title": "Daily screen time, hours", "accent_word": "hours", "accent": "coral", "unit": " h", "decimals": 1, "on": "years",
+  "points": [[2015, 2.1], [2016, 2.4], [2017, 2.8], [2018, 3.0], [2019, 3.3], [2020, 3.6], [2021, 4.0], [2022, 4.2], [2023, 4.3], [2024, 4.4], [2025, 4.5]], "source": "example data, not real figures"},
+ {"type": "takeaway", "text": "Take the phone out of the bedroom", "accent_word": "out", "accent": "teal"}
+]}

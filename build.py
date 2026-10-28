@@ -24,7 +24,8 @@ MOTION = ["in", "pan_l", "out", "pan_r"]   # cycled per scene
 POP = 0.28           # pop-in seconds (scale 0 -> ~1.1 -> 1, ~8 frames to overshoot)
 SFX_VOL = 0.35       # pop / whoosh loudness
 MAX_STILL = 4.5      # warn if nothing visual changes for longer than this
-WPS = 2.5            # words per second used to estimate scene length in --storyboard
+BGM_VOL = 0.18       # music.* bed gain: ~15 dB under narration for a track as loud as the voice (mean ~-20 dB)
+WPS = 2.5           # words per second used to estimate scene length in --storyboard
 norm = lambda w: re.sub(r"[^a-z0-9']", "", w.lower())
 
 
@@ -167,6 +168,9 @@ def main(ep, render=True):
     shutil.copy(audio, hf / "assets" / ("narration" + audio.suffix))
     for p in imgs:
         shutil.copy(p, hf / "assets" / p.name)
+    music = next((p for e in ("mp3", "wav", "m4a", "ogg") for p in ep.glob(f"music.{e}")), None)   # optional soft bed, ducked under the voice
+    if music:
+        shutil.copy(music, hf / "assets" / music.name)
 
     # ---- scripted events: pop / swap / punch, placed at the start of the word they precede
     POS = {"left": 160, "center": 680, "right": 1200}
@@ -201,12 +205,13 @@ def main(ep, render=True):
             elif kind == "swap":
                 ev_html.append(f'<img id="swap{n}" class="clip" src="assets/layers/{f.name}" data-start="{t:.2f}" data-duration="{scene_end[si] + FADE / 2 - t:.2f}" data-track-index="3" style="z-index:{30 + n}" />')
                 ev_js.append(f'tl.fromTo("#swap{n}",{{opacity:0}},{{opacity:1,duration:0.15,ease:"none"}},{t:.2f});')
-            elif kind == "punch":
+            elif kind in ("punch", "zoom"):          # punch = zoom + whoosh (use rarely); zoom = silent
                 ev_js.append(f'tl.fromTo("#stage",{{scale:1}},{{scale:1.07,duration:0.12,ease:"power2.out"}},{t:.2f});')
                 ev_js.append(f'tl.to("#stage",{{scale:1,duration:0.35,ease:"power2.inOut"}},{t + 0.12:.2f});')
-                sfx("sfx_whoosh", SFX_VOL)
+                if kind == "punch":
+                    sfx("sfx_whoosh", SFX_VOL)
             else:
-                sys.exit(f"unknown tag {{{tag}}} (use pop:, swap:, punch)")
+                sys.exit(f"unknown tag {{{tag}}} (use pop:, swap:, punch, zoom)")
             ev_times.append(t)
         off += len(p)
     marks = sorted(scene_start + ev_times + [end])
@@ -250,6 +255,11 @@ def main(ep, render=True):
             js.append(f'tl.to("#g{gi}w{wi}",{{color:"#ffd24a",duration:.05}},{w[1]:.2f});')
         js.append(f'tl.to("#g{gi}",{{opacity:0,duration:.1,ease:"power2.in"}},{ge - 0.1:.2f});')
 
+    bgm_html = ""
+    if music:                                  # plays once (no loop): a track shorter than the video just ends
+        md = float(run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", music]).strip())
+        bgm_html = (f'<audio id="bgm" class="clip" src="assets/{music.name}" data-start="0" data-duration="{min(md, end):.2f}" '
+                    f'data-track-index="6" data-volume="{BGM_VOL}" data-fade-in="1.5" data-fade-out="2.5"></audio>')
     html = f"""<!doctype html>
 <html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=1920, height=1080" />
 <script src="assets/gsap.min.js"></script>
@@ -270,6 +280,7 @@ img.clip{{position:absolute;left:0;top:0;width:1920px;height:1080px;object-fit:c
 </div>
 {chr(10).join(e for e in ev_html if e.startswith("<audio"))}
 <audio id="narr" class="clip" src="assets/narration{audio.suffix}" data-start="0" data-duration="{dur:.2f}" data-track-index="2" data-volume="1"></audio>
+{bgm_html}
 {chr(10).join(cap_html)}
 </div>
 <script>

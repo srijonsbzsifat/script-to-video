@@ -56,7 +56,7 @@ A style card is a short file (`styles/<name>.md`, first one: `styles/data-story.
 | Data Story | stats, news, "why" explainers | dark ink, one warm accent per idea, charts that draw to scale, source always on screen |
 | Warm Canvas | talking-head edits | full-frame face, serif captions, then canvas with cards and face in a rounded PiP |
 | Pop Info | infographic-style long-form | flat-vector scene, one character with a big feeling, thought bubble, counter, dotted path, iris wipe |
-| Stickman / cartoon (existing) | stories, simple explainers | Flow images per scene + `{pop}` `{swap}` `{punch}` tags |
+| Stickman (`styles/stickman.md`) | stories, simple explainers | Flow images per scene + `{pop}` `{swap}` tags; no quick zooms, no whooshes by default |
 
 Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, ask for a new card in that look, review ONE test frame, then approve. Copy the look (palette, motion language, layout), never the reference channel's exact art, text or characters.
 
@@ -87,7 +87,7 @@ Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, as
 - [ ] No third-party logos, characters or copied art
 
 ## 8. Gaps in our tooling (build order, not yet done)
-Done: `styles/data-story.md` (rendered by `styles/data_story.py`; scenes via `scenes.json`, sample `episodes/test-data`; types done: claim, number, bar, line, takeaway; still to add: compare, flow, share, sound) and `build.py EPISODE --storyboard`
+Done: `styles/data-story.md` (rendered by `styles/data_story.py`; scenes via `scenes.json`, sample `examples/data-story`; types done: claim, number, bar, line, takeaway; still to add: compare, flow, share, sound) and `build.py EPISODE --storyboard`
 (writes `storyboard.html`: image, time, narration and tags per scene; works before narration exists, estimated times; flags scenes with no visual change).
 Still open:
 1. Data Story: compare/flow/share scene types and its sound; then the Clean Tech card.
@@ -96,3 +96,24 @@ Still open:
 4. Chart and diagram components (draw-on bars, lines, flow arrows) as `{chart:...}` tags.
 5. 9:16 render flag.
 6. Chapter split/join helper for long-form.
+
+## 9. Lessons from the first test episodes (episodes themselves are not committed)
+- **Quick zooms and whooshes hurt flow.** Tested on a stickman explainer: 11 punch zooms + whooshes felt busy; even 5 silent zooms were disliked. Default = slow drift only. Rhythm comes from pops, `{swap}` poses or new scenes. `{punch}` / `{zoom}` exist but are off by default.
+- **Flow image batches:** `flow_agent_images` can fail ("Reuse prompt" timeout) and fall back to one-by-one (~1 min/image; 11 images ~15 min, 0 credits). Plan for it; do the rest of the prep while it runs.
+- **Prop leaks:** an "idea" prop (lightbulb) in one scene prompt leaked into 3 other images. Put props only in the scene that needs them, say "no <prop>" elsewhere, and look at every image.
+- **Reserve pop space:** every scene prompt names which part of the frame stays empty for the pop.
+- **Gemini narration:** `flow_narrate` takes <= 400 characters per call and the free tier allows ~10 requests/day. Chunk by scenes, join with a 0.3 s pad (`ffmpeg concat`), one voice per channel. Windows SAPI voices are only for throwaway tests.
+- **Fonts offline:** HyperFrames bundles Inter, Archivo Black, IBM Plex Mono, Poppins, Space Mono, JetBrains Mono, Oswald and others; any other family fails lint (`font_family_without_font_face`).
+- **Captions:** the default yellow highlight is low contrast on pale backgrounds; darken or add a stroke before publishing. Code-graphic styles (Data Story) run with captions off.
+- **Storyboard is a gate, not a file:** generate it, show it, wait for the OK.
+- **Sample data on screen is labelled** "example data, not real figures".
+- **Examples** (text only) live in `examples/`; the test episodes were deleted-by-design.
+
+## 10. Music bed
+Optional `music.mp3|wav|m4a` in the episode folder: `build.py` mixes it at `BGM_VOL` (0.18, about 15 dB under narration for a track as loud as the voice; check with a pause between words, it should read about -37 dB against -20 dB voice), 1.5 s fade-in, 2.5 s fade-out. It plays once (no loop), so trim it to the video length with ffmpeg first (`-t <video seconds>`).
+Making the track with **Google Flow Music** (flowmusic.app, Lyria 3.5) through the Flow MCP:
+1. User signs in to Flow Music by hand on the flowmusic.app tab in the Flow Chrome (never the app's built-in pane).
+2. `flow_music_create` with a plain-words prompt: "instrumental, no vocals, no drums, calm solo piano with gentle pads, ~70 BPM, low dynamics, no builds, fades in and out, for under a narrator". It downloads the newest of the two variants straight into the Flow output folder (Downloadslow-mcp-out<project>, under the song title, like Flow images); copy it from there into the episode.
+3. Not right? `flow_music_edit` with a follow-up ("softer", "no pads", "slow fade out"), same session. `flow_music_download` fetches any variant by id (mp3, m4a or wav).
+4. The Producer ignores length (asked 60 s got 2:37): trim and fade with ffmpeg. Copy the file into the episode as `music.mp3` and rebuild.
+Other sources if Flow Music is unavailable: a royalty-free track you pick; Google Lyria through the Gemini key (HyperFrames `media-use` recipe); local MusicGen (about 300 MB download, ask first).

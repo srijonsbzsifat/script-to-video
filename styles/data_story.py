@@ -1,6 +1,6 @@
 """Data Story renderer (see styles/data-story.md). One scene spec -> (html, gsap js lines, event times).
 
-Scene specs live in EPISODE/scenes.json (see episodes/test-data). Types: claim, number, bar, line, takeaway.
+Scene specs live in EPISODE/scenes.json (see examples/data-story). Types: claim, number, bar, line, takeaway.
 "on": a word from the scene's narration; the element appears when that word is spoken (else at scene start).
 """
 import re
