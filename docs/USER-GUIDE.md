@@ -52,7 +52,7 @@ Everything is drawn by code from `scenes.json`: headline, big counter, bar chart
 ## Mode C: Cinema-2D (code-drawn film)
 Characters, sets, faces, diagrams and 3D shots drawn frame by frame. Free to render (about 10 fps at 1080p on your PC), but Claude has to write every shot, so it uses a lot of your plan.
 
-**One-time setup (already done on this PC):** studio at `N:\AI\aitrends-2d-studio`, with its browser and libraries inside that folder. Light styles are installed with `python -I tools/install_cinema_styles.py N:/AI/aitrends-2d-studio`. The kit is not in git (no licence file).
+**One-time setup:** `python -I tools/setup_studio.py --go` installs the studio into `./studio` (about 1 GB, everything inside that folder). Check it with `python -I tools/studio.py where`. Run any studio command through `python -I tools/studio.py run node render.mjs ...` so the browser and libraries are found. The engine comes from the aiTrends plugin in `plugins/` (see THIRD_PARTY.md).
 
 **Say this to Claude**
 > Make a Cinema-2D video from episode `my-episode`, chapter 1 (first 60 seconds), style `daylight`. Run the hand-off, then do stages 4 to 8 of the studio's make-2d-video skill. Take all colours from the style, run the colour lint and a style grid before the full render.

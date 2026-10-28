@@ -11,3 +11,6 @@ episodes/*/storyboard.html
 episodes/*
 !episodes/test-pops/
 !episodes/.gitkeep
+
+# the installed cinema-2D studio (downloaded by tools/setup_studio.py)
+studio/

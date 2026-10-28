@@ -1,6 +1,6 @@
 """Hand a script-to-video episode to the cinema-2D studio kit (the aiTrends-style code-drawn 2D/3D engine).
 
-  python -I tools/to_studio.py episodes/NAME [--studio N:/AI/aitrends-2d-studio] [--style daylight]
+  python -I tools/to_studio.py episodes/NAME [--studio PATH] [--style daylight]
                                [--aspect 16:9|9:16] [--res 1080p] [--title "My Title"]
 
 Uses OUR parts: narration.* (any voice), script.txt (exact wording; {tags} are dropped), our local whisper for word
@@ -15,21 +15,22 @@ sys.path.insert(0, str(HERE))
 import build                                   # parse_script, align, run, WHISPER (no side effects on import)
 sys.path.insert(0, str(HERE / "tools"))
 import install_cinema_styles
+from studio import studio_dir
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("episode")
-    ap.add_argument("--studio", default="N:/AI/aitrends-2d-studio")
+    ap.add_argument("--studio", default=None, help="default: STUDIO_DIR, <repo>/studio, or the original N:/AI install")
     ap.add_argument("--style", default="dusk", help="dusk|midnight|golden|neon|storybook (kit) or daylight|paper|candy (ours)")
     ap.add_argument("--aspect", default="16:9", choices=["16:9", "9:16"])
     ap.add_argument("--res", default="1080p", choices=["720p", "1080p", "1440p", "2160p"])
     ap.add_argument("--title", default="")
     a = ap.parse_args()
 
-    ep, studio = pathlib.Path(a.episode).resolve(), pathlib.Path(a.studio).resolve()
+    ep, studio = pathlib.Path(a.episode).resolve(), studio_dir(a.studio)
     if not (studio / "render.mjs").exists():
-        sys.exit(f"studio not found at {studio} (install it first, see docs/USER-GUIDE.md)")
+        sys.exit(f"studio not found at {studio} (install it first: python -I tools/setup_studio.py --go)")
     audio = next((p for e in ("wav", "mp3", "m4a", "flac", "ogg") for p in ep.glob(f"narration.{e}")), None)
     if not audio:
         sys.exit(f"no narration.* in {ep}")
