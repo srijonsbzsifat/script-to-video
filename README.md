@@ -60,9 +60,9 @@ Use a **fresh chat for each step marked 🆕** (see section 4). Save what each s
 
 **Step 3 🆕 Fact check.** New chat: "Here is a script and its fact list. For each number and claim say whether it is well established, uncertain or wrong. Do not invent sources." Fix `script.txt`. Never publish a number you did not check.
 
-**Step 4 Narration.** In a chat in the repo: "Narrate `episodes/<name>/script.txt` with Gemini, voice Charon, calm explainer, in chunks, save as `narration.wav`." (Or record yourself, or use ElevenLabs and drop the file in.)
+**Step 4 Narration.** In a chat in the repo: "Narrate `episodes/<name>/script.txt` with Gemini, voice Charon, calm explainer, save as `narration.wav`." The tool takes the whole script (up to about 12,000 characters), splits it at sentence ends into takes of about 1,800 characters (1.5-2 minutes each) and joins them: **a 6-minute script is 3-4 requests** of the free tier's roughly 10 a day, so about two videos a day. Tested: 1,608 characters in one take = 100 s, complete, about 3 words per second. (Or record yourself, or use ElevenLabs and drop the file in.)
 
-**Step 5 Music.** "Make a soft instrumental piano bed with Flow Music, instrumental, no drums, trim it to the video length with fades, save as `music.mp3` in the episode." It is mixed about 15 dB under the voice.
+**Step 5 Music.** "Make a soft instrumental piano bed with Flow Music, no drums, for a 6-minute video, and save it as `music.mp3` in the episode." Flow Music tracks come out **2-3.5 minutes whatever length you ask for** (asking for 6 minutes gave 2:57), so for 5-7 minutes Claude makes 2-3 tracks and joins them with `tools/join_music.py` (loudness-matched, crossfaded, faded in and out). It is mixed about 15 dB under the voice.
 
 **Step 6 Pick the mode and look.** Use the table at the top. Ask Claude to "show me the options" for Mode C styles (dark: dusk, midnight, golden, neon, storybook; light: **daylight, paper, candy**) or to design a new one from a screenshot. Details, with copy-paste prompts for each mode: **[docs/USER-GUIDE.md](docs/USER-GUIDE.md)**.
 

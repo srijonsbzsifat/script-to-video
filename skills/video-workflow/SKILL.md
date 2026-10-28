@@ -123,3 +123,8 @@ Three ways to turn narration into video; the full how-to with copy-paste prompts
 - **A. Images + small animations**: `build.py` with Flow stills (stickman card).
 - **B. Voice to graphics**: `build.py` with `scenes.json` (Data Story card; other Nafay-style looks are specs, not built).
 - **C. Cinema-2D**: local studio kit via `tools/to_studio.py` (cinema-2d card). Not only dark: light packs daylight/paper/candy, add more as JSON; scene code must take every colour from the style (`tools/lint_style_colors.py`). Measured cost: 30 s clip about 7% of a Pro 5-hour window, so work in 60-90 s chapters.
+
+## 12. Long videos (5-7 min): narration and music limits (tested 2026-10-28)
+- **Narration:** `flow_narrate` (gemini) takes up to ~12,000 characters, splits at sentence ends into ~1,800-character takes and joins them. 1,608 characters in one take = 100 s, 97% word match (misses were spelling). Free tier: 3 requests a minute and about 10 a day, so a 6-minute script is 3-4 requests. Charon read about 3 words per second: ask for "slower, steady pace" if you need 150 wpm.
+- **Music:** a Flow Music track is 2-3.5 min whatever you ask (a "6 minute" request gave 2:57). Make 2-3 and join with `tools/join_music.py OUT.mp3 --length <video seconds> a.mp3 b.mp3 ...` (normalises each, crossfades, fades).
+- No separate narration tool is needed for 5-7 minutes. Reasons to use another voice tool: a voice Gemini does not have, or more than ~2 videos a day on the free tier.
