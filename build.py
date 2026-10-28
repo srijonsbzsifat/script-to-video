@@ -1,6 +1,7 @@
 """Script-to-video builder: episode folder -> final.mp4 via HyperFrames.
 
   python -I build.py EPISODE_DIR [--no-render]
+  python -I build.py EPISODE_DIR --storyboard   storyboard.html: scenes, images, times, tags (no audio needed)
   python -I build.py --new NAME            create episodes/NAME with script.txt + layers/
 
 EPISODE_DIR holds:
@@ -23,6 +24,7 @@ MOTION = ["in", "pan_l", "out", "pan_r"]   # cycled per scene
 POP = 0.28           # pop-in seconds (scale 0 -> ~1.1 -> 1, ~8 frames to overshoot)
 SFX_VOL = 0.35       # pop / whoosh loudness
 MAX_STILL = 4.5      # warn if nothing visual changes for longer than this
+WPS = 2.5            # words per second used to estimate scene length in --storyboard
 norm = lambda w: re.sub(r"[^a-z0-9']", "", w.lower())
 
 
@@ -58,13 +60,7 @@ def align(script_words, asr):
     return t
 
 
-def main(ep, render=True):
-    if not HF.exists():
-        sys.exit("HyperFrames is not installed: run  python -I setup.py")
-    ep = pathlib.Path(ep).resolve()
-    audio = next((p for e in ("wav", "mp3", "m4a", "flac", "ogg") for p in ep.glob(f"narration.{e}")), None)
-    if not audio:
-        sys.exit("no narration.wav/mp3/m4a in " + str(ep))
+def parse_script(ep):
     paras, tags = [], []            # tags[scene] = [(index of the word it sits before, "pop:x.png @right")]
     for p in re.split(r"\n\s*\n", (ep / "script.txt").read_text(encoding="utf-8").strip()):
         if not p.strip():
@@ -76,7 +72,51 @@ def main(ep, render=True):
             else:
                 ws.append(m.group(2))
         paras.append(ws); tags.append(ev)
-    imgs = sorted(p for p in ep.iterdir() if re.fullmatch(r"s\d+\.(png|jpe?g|webp|svg)", p.name, re.I))
+    return paras, tags
+
+
+def find_images(ep):
+    return sorted(p for p in ep.iterdir() if re.fullmatch(r"s\d+\.(png|jpe?g|webp|svg)", p.name, re.I))
+
+
+def storyboard(ep):
+    """Write EPISODE_DIR/storyboard.html: one card per scene (image, time, narration, tags). Needs no audio.
+    Review it BEFORE narration/build; times are real if timings.json exists, else estimated at WPS words/s."""
+    from html import escape
+    ep = pathlib.Path(ep).resolve()
+    paras, tags = parse_script(ep)
+    imgs = {int(re.search(r"\d+", p.name).group()): p for p in find_images(ep)}
+    real = json.load(open(ep / "timings.json", encoding="utf-8")) if (ep / "timings.json").exists() else None
+    t, cards = 0.0, []
+    for i, ws in enumerate(paras):
+        if real:
+            sw = [w for w in real if w[3] == i]
+            a, b = sw[0][1], sw[-1][2]
+        else:
+            a, b = t, t + len(ws) / WPS
+        t = b
+        ev = [f"{{{x}}}" for _, x in tags[i]]
+        warn = "" if ev or b - a <= MAX_STILL else f'<b class="w">{b - a:.1f}s with no pop/swap/punch</b>'
+        pic = f'<img src="{imgs[i + 1].name}">' if i + 1 in imgs else '<div class="none">no image yet</div>'
+        cards.append(f'<div class="c">{pic}<h3>{i + 1:02d} &middot; {a:.1f}-{b:.1f}s</h3><p>{escape(" ".join(ws))}</p>'
+                     f'<code>{escape(" ".join(ev))}</code>{warn}</div>')
+    css = ("body{font:15px system-ui;background:#16161a;color:#eee;margin:20px}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}"
+           ".c{background:#222228;border-radius:8px;padding:10px}.c img,.none{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;background:#000;display:grid;place-items:center;color:#777}"
+           "h3{margin:8px 0 4px;font-size:14px;color:#ffd24a}p{margin:0 0 6px}code{color:#8cf}.w{display:block;color:#f66;margin-top:4px}")
+    (ep / "storyboard.html").write_text(f'<!doctype html><meta charset="utf-8"><title>Storyboard</title><style>{css}</style>'
+                                        f'<h2>{ep.name}: {len(paras)} scenes, {"" if real else "~"}{t:.0f}s</h2><div class="g">{"".join(cards)}</div>', encoding="utf-8")
+    print("wrote", ep / "storyboard.html", "(real times)" if real else "(estimated times)")
+
+
+def main(ep, render=True):
+    if not HF.exists():
+        sys.exit("HyperFrames is not installed: run  python -I setup.py")
+    ep = pathlib.Path(ep).resolve()
+    audio = next((p for e in ("wav", "mp3", "m4a", "flac", "ogg") for p in ep.glob(f"narration.{e}")), None)
+    if not audio:
+        sys.exit("no narration.wav/mp3/m4a in " + str(ep))
+    paras, tags = parse_script(ep)
+    imgs = find_images(ep)
     if len(imgs) != len(paras):
         sys.exit(f"{len(paras)} scenes in script.txt but {len(imgs)} images (s01, s02, ...)")
     dur = float(run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", audio]).strip())
@@ -251,4 +291,7 @@ if __name__ == "__main__":
         sys.exit(f"created {d}\nadd narration.wav, s01.png, s02.png ... then: python -I build.py {d}")
     if not args:
         sys.exit(__doc__)
-    main(args[0], render="--no-render" not in sys.argv)
+    if "--storyboard" in sys.argv:
+        storyboard(args[0])
+    else:
+        main(args[0], render="--no-render" not in sys.argv)

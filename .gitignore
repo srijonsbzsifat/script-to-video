@@ -6,6 +6,7 @@ episodes/*/hf/
 episodes/*/final.mp4
 episodes/*/timings/
 episodes/*/timings.json
+episodes/*/storyboard.html
 # local episodes are not part of the repo; only the sample is
 episodes/*
 !episodes/test-pops/
