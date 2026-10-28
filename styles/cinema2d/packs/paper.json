@@ -1,0 +1,136 @@
+{
+ "id": "paper",
+ "name": "Paper Editorial",
+ "desc": "Warm off-white paper tones, muted earthy palette, charcoal-brown figures, soft low contrast. Calm documentary / history / explainer tone.",
+ "ink": "#2a2320",
+ "inkFar": "#6a5f55",
+ "feature": "#fffaf0",
+ "rimWidth": 3,
+ "ui": {
+  "card": "rgba(255,251,242,.96)",
+  "cardLine": "rgba(40,60,100,.22)",
+  "text": "#3a2f28",
+  "sub": "#7a6c60",
+  "accent": "#c8553d",
+  "gold": "#a8701a",
+  "cream": "#2a2320",
+  "blueprint": "#3a6a8a",
+  "bpBg": "#f3ecdc",
+  "good": "#4f8a5b"
+ },
+ "grade": {
+  "contrast": 0.94,
+  "sat": 0.95,
+  "lift": [
+   0.05,
+   0.045,
+   0.035
+  ],
+  "gamma": [
+   1.04,
+   1.03,
+   1.0
+  ],
+  "gain": [
+   1.05,
+   1.03,
+   0.98
+  ],
+  "vignette": 0.14,
+  "grain": 0.06,
+  "bloom": 0.12
+ },
+ "moods": {
+  "day": {
+   "sky": [
+    "#cfe0e8",
+    "#e8eee8",
+    "#f6f0e3"
+   ],
+   "ambient": "#b9ae9b",
+   "key": "#fff6df",
+   "rim": "#fffaf0",
+   "wall": "#efe5d1",
+   "floor": "#d8c8a9",
+   "dark": "#7a6a55",
+   "practical": "#f5d98a",
+   "grass": "#a9bf86",
+   "road": "#bcb09a",
+   "fog": "#f3ecdc"
+  },
+  "golden": {
+   "sky": [
+    "#e6c9a0",
+    "#f2d2a4",
+    "#f8e6c4"
+   ],
+   "ambient": "#c4a98a",
+   "key": "#f3c27a",
+   "rim": "#fff0cc",
+   "wall": "#ead3b0",
+   "floor": "#cfae82",
+   "dark": "#80634a",
+   "practical": "#f6d68a",
+   "grass": "#a9b87a",
+   "road": "#b8a58a",
+   "fog": "#f4dfbb"
+  },
+  "dusk": {
+   "sky": [
+    "#b69aa8",
+    "#d9a592",
+    "#eac0a0",
+    "#f6dcbc"
+   ],
+   "ambient": "#a58f8c",
+   "key": "#f0b788",
+   "rim": "#fff0d8",
+   "wall": "#dcc4b0",
+   "floor": "#bfa28e",
+   "dark": "#75605a",
+   "practical": "#f6d08a",
+   "grass": "#9eb084",
+   "road": "#b09f94",
+   "fog": "#e7c6b0"
+  },
+  "night": {
+   "sky": [
+    "#7a86a4",
+    "#98a2bc",
+    "#bcc4d6"
+   ],
+   "ambient": "#9a9fb0",
+   "key": "#e8ecf5",
+   "rim": "#fff8ea",
+   "wall": "#c4c4cc",
+   "floor": "#a2a3b0",
+   "dark": "#575c70",
+   "practical": "#f2d27a",
+   "grass": "#98ae92",
+   "road": "#a3a4b2",
+   "fog": "#b8bfd0"
+  },
+  "storm": {
+   "sky": [
+    "#8d97a2",
+    "#a8b0b8",
+    "#c4c9ce"
+   ],
+   "ambient": "#a0a5ab",
+   "key": "#eef2f4",
+   "rim": "#fffaf0",
+   "wall": "#bfc4c6",
+   "floor": "#a1a7a8",
+   "dark": "#5d6568",
+   "practical": "#eef2f4",
+   "grass": "#9bb095",
+   "road": "#a2a7a8",
+   "fog": "#c0c6c8"
+  }
+ },
+ "void": {
+  "bg": "#f3ecdc",
+  "bg2": "#e9dfc9",
+  "line": "#3a6a8a"
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "id": "candy",
+ "name": "Candy Pop",
+ "desc": "Saturated, colourful, playful: cyan skies, pink and orange sets, deep-purple figures. Kids / science / fun what-if tone.",
+ "ink": "#2b1b4b",
+ "inkFar": "#6a56a0",
+ "feature": "#ffffff",
+ "rimWidth": 3.5,
+ "ui": {
+  "card": "rgba(255,255,255,.96)",
+  "cardLine": "rgba(40,60,100,.22)",
+  "text": "#2b1b4b",
+  "sub": "#7a66b0",
+  "accent": "#ff4f8b",
+  "gold": "#e07a00",
+  "cream": "#2b1b4b",
+  "blueprint": "#5b3fd0",
+  "bpBg": "#f1ecff",
+  "good": "#12b886"
+ },
+ "grade": {
+  "contrast": 1.04,
+  "sat": 1.2,
+  "lift": [
+   0.03,
+   0.02,
+   0.05
+  ],
+  "gamma": [
+   1,
+   1,
+   1
+  ],
+  "gain": [
+   1.05,
+   1.03,
+   1.06
+  ],
+  "vignette": 0.12,
+  "grain": 0.02,
+  "bloom": 0.3
+ },
+ "moods": {
+  "day": {
+   "sky": [
+    "#4cc9f0",
+    "#9be7ff",
+    "#e8fbff"
+   ],
+   "ambient": "#8fd0e0",
+   "key": "#fff7c2",
+   "rim": "#ffffff",
+   "wall": "#ffd6e8",
+   "floor": "#ffb86b",
+   "dark": "#6a3d9a",
+   "practical": "#ffe066",
+   "grass": "#5fd38d",
+   "road": "#9a8cff",
+   "fog": "#e3f8ff"
+  },
+  "golden": {
+   "sky": [
+    "#ff9a8b",
+    "#ffc371",
+    "#ffe9a8"
+   ],
+   "ambient": "#ffb199",
+   "key": "#fff0a8",
+   "rim": "#ffffff",
+   "wall": "#ffb3c1",
+   "floor": "#ff9f6b",
+   "dark": "#7a3a6a",
+   "practical": "#fff176",
+   "grass": "#7fd96b",
+   "road": "#c58aff",
+   "fog": "#ffd9b3"
+  },
+  "dusk": {
+   "sky": [
+    "#6c5ce7",
+    "#c56cf0",
+    "#ff7eb3",
+    "#ffd194"
+   ],
+   "ambient": "#b58ae6",
+   "key": "#ffd1a8",
+   "rim": "#fff0f6",
+   "wall": "#b9a1ff",
+   "floor": "#8c7ae6",
+   "dark": "#3d2a73",
+   "practical": "#ffe066",
+   "grass": "#58d68d",
+   "road": "#8e7cd9",
+   "fog": "#f3c6ff"
+  },
+  "night": {
+   "sky": [
+    "#3b2f8f",
+    "#6a4fcf",
+    "#a77bff"
+   ],
+   "ambient": "#7e6bd6",
+   "key": "#d9ccff",
+   "rim": "#ffffff",
+   "wall": "#7c6bd6",
+   "floor": "#5b4bb5",
+   "dark": "#2a2070",
+   "practical": "#ffe066",
+   "grass": "#3fbf9a",
+   "road": "#6b5cc4",
+   "fog": "#8e7ae6"
+  },
+  "storm": {
+   "sky": [
+    "#4a5a9a",
+    "#6f80c0",
+    "#9aa8e0"
+   ],
+   "ambient": "#7c8ad0",
+   "key": "#e6ecff",
+   "rim": "#ffffff",
+   "wall": "#8a97d6",
+   "floor": "#6a76b8",
+   "dark": "#2f3a70",
+   "practical": "#fff0a0",
+   "grass": "#4fbf9a",
+   "road": "#6a76b8",
+   "fog": "#a9b6ea"
+  }
+ },
+ "void": {
+  "bg": "#f1ecff",
+  "bg2": "#e3dbff",
+  "line": "#5b3fd0"
+ }
+}

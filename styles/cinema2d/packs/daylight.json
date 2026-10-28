@@ -1,0 +1,136 @@
+{
+ "id": "daylight",
+ "name": "Daylight Clean",
+ "desc": "Bright, clean daylight: blue skies, white and cream walls, charcoal figures. Friendly explainer tone, no heavy shadows.",
+ "ink": "#1c2433",
+ "inkFar": "#5a6478",
+ "feature": "#ffffff",
+ "rimWidth": 3,
+ "ui": {
+  "card": "rgba(255,255,255,.95)",
+  "cardLine": "rgba(40,60,100,.22)",
+  "text": "#2b3550",
+  "sub": "#6b7690",
+  "accent": "#e8553f",
+  "gold": "#b87a00",
+  "cream": "#1c2433",
+  "blueprint": "#2f5da8",
+  "bpBg": "#eef3fb",
+  "good": "#2f9e6b"
+ },
+ "grade": {
+  "contrast": 0.98,
+  "sat": 1.08,
+  "lift": [
+   0.04,
+   0.04,
+   0.05
+  ],
+  "gamma": [
+   1,
+   1,
+   1
+  ],
+  "gain": [
+   1.06,
+   1.05,
+   1.04
+  ],
+  "vignette": 0.12,
+  "grain": 0.03,
+  "bloom": 0.2
+ },
+ "moods": {
+  "day": {
+   "sky": [
+    "#7fb6ee",
+    "#bfdcf7",
+    "#eaf4fd"
+   ],
+   "ambient": "#9fb2c8",
+   "key": "#fffbe8",
+   "rim": "#ffffff",
+   "wall": "#e8eef6",
+   "floor": "#c9d3df",
+   "dark": "#6b7889",
+   "practical": "#ffe9a8",
+   "grass": "#7fc47a",
+   "road": "#9aa5b3",
+   "fog": "#eaf3fb"
+  },
+  "golden": {
+   "sky": [
+    "#8fb8e6",
+    "#f6c995",
+    "#ffe6b8"
+   ],
+   "ambient": "#c9b9a8",
+   "key": "#ffd89a",
+   "rim": "#fff0cc",
+   "wall": "#f2dcc2",
+   "floor": "#d9bd9c",
+   "dark": "#8a7260",
+   "practical": "#fff0b8",
+   "grass": "#8cc47a",
+   "road": "#a99f95",
+   "fog": "#fbe3c4"
+  },
+  "dusk": {
+   "sky": [
+    "#7a86c8",
+    "#d99ac0",
+    "#f7b79a",
+    "#fde0b8"
+   ],
+   "ambient": "#a89ab8",
+   "key": "#ffd0a0",
+   "rim": "#fff0d8",
+   "wall": "#d9cfe0",
+   "floor": "#b8aac6",
+   "dark": "#6e6283",
+   "practical": "#ffe0a8",
+   "grass": "#7fb58a",
+   "road": "#a8a0b8",
+   "fog": "#f0cfd8"
+  },
+  "night": {
+   "sky": [
+    "#5568b0",
+    "#7e8fcf",
+    "#aab6e8"
+   ],
+   "ambient": "#8793c8",
+   "key": "#e4eaff",
+   "rim": "#ffffff",
+   "wall": "#b3bde0",
+   "floor": "#8e99c4",
+   "dark": "#4a5488",
+   "practical": "#ffe08a",
+   "grass": "#6fa88c",
+   "road": "#8a93b8",
+   "fog": "#a9b6e6"
+  },
+  "storm": {
+   "sky": [
+    "#6d7a96",
+    "#8e9bb4",
+    "#b0bace"
+   ],
+   "ambient": "#8e9ab0",
+   "key": "#e8eef8",
+   "rim": "#ffffff",
+   "wall": "#aeb8c8",
+   "floor": "#8d97a8",
+   "dark": "#4f5a6e",
+   "practical": "#e9f1ff",
+   "grass": "#7ba58a",
+   "road": "#8a93a3",
+   "fog": "#b5bfce"
+  }
+ },
+ "void": {
+  "bg": "#eaf1fb",
+  "bg2": "#dce7f6",
+  "line": "#2f5da8"
+ }
+}

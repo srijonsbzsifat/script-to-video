@@ -8,7 +8,7 @@ long-form...), with word-timed captions, springy "pop" elements, scene swaps, ca
 narration (AI Studio, etc.) -> script.txt -> images (Flow/Imagen) -> build.py -> final.mp4
 ```
 
-Process and style guideline for any video (explainers, stories, long-form): [`skills/video-workflow/SKILL.md`](skills/video-workflow/SKILL.md).
+**How to use the three modes with Claude: [`docs/USER-GUIDE.md`](docs/USER-GUIDE.md).** Process and style guideline for any video (explainers, stories, long-form): [`skills/video-workflow/SKILL.md`](skills/video-workflow/SKILL.md).
 
 ## Setup (check first, install only what is missing)
 Your machine may already have the tools. **Run the check first, before installing anything:**

@@ -117,3 +117,9 @@ Making the track with **Google Flow Music** (flowmusic.app, Lyria 3.5) through t
 3. Not right? `flow_music_edit` with a follow-up ("softer", "no pads", "slow fade out"), same session. `flow_music_download` fetches any variant by id (mp3, m4a or wav).
 4. The Producer ignores length (asked 60 s got 2:37): trim and fade with ffmpeg. Copy the file into the episode as `music.mp3` and rebuild.
 Other sources if Flow Music is unavailable: a royalty-free track you pick; Google Lyria through the Gemini key (HyperFrames `media-use` recipe); local MusicGen (about 300 MB download, ask first).
+
+## 11. Engines (modes) and the user guide
+Three ways to turn narration into video; the full how-to with copy-paste prompts is `docs/USER-GUIDE.md`.
+- **A. Images + small animations**: `build.py` with Flow stills (stickman card).
+- **B. Voice to graphics**: `build.py` with `scenes.json` (Data Story card; other Nafay-style looks are specs, not built).
+- **C. Cinema-2D**: local studio kit via `tools/to_studio.py` (cinema-2d card). Not only dark: light packs daylight/paper/candy, add more as JSON; scene code must take every colour from the style (`tools/lint_style_colors.py`). Measured cost: 30 s clip about 7% of a Pro 5-hour window, so work in 60-90 s chapters.
