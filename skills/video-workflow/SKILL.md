@@ -87,10 +87,10 @@ Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, as
 - [ ] No third-party logos, characters or copied art
 
 ## 8. Gaps in our tooling (build order, not yet done)
-Done: `styles/data-story.md` (first written card; spec only, no renderer yet) and `build.py EPISODE --storyboard`
+Done: `styles/data-story.md` (rendered by `styles/data_story.py`; scenes via `scenes.json`, sample `episodes/test-data`; types done: claim, number, bar, line, takeaway; still to add: compare, flow, share, sound) and `build.py EPISODE --storyboard`
 (writes `storyboard.html`: image, time, narration and tags per scene; works before narration exists, estimated times; flags scenes with no visual change).
 Still open:
-1. Render Data Story through HyperFrames (scene sections + SVG charts), then the Clean Tech card.
+1. Data Story: compare/flow/share scene types and its sound; then the Clean Tech card.
 2. Code-graphic storyboard: `--storyboard` currently shows images only, not rendered stills of code scenes.
 3. Small procedural SFX set (slam, whoosh, tick, boom) so code-graphics videos have sound without asset hunting.
 4. Chart and diagram components (draw-on bars, lines, flow arrows) as `{chart:...}` tags.

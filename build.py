@@ -116,8 +116,16 @@ def main(ep, render=True):
     if not audio:
         sys.exit("no narration.wav/mp3/m4a in " + str(ep))
     paras, tags = parse_script(ep)
-    imgs = find_images(ep)
-    if len(imgs) != len(paras):
+    spec = json.load(open(ep / "scenes.json", encoding="utf-8")) if (ep / "scenes.json").exists() else None
+    if spec:                                    # code-drawn style (styles/data_story.py): no scene images
+        sys.path.insert(0, str(HERE / "styles"))
+        import data_story
+        imgs = []
+        if len(spec["scenes"]) != len(paras):
+            sys.exit(f"{len(paras)} scenes in script.txt but {len(spec['scenes'])} in scenes.json")
+    else:
+        imgs = find_images(ep)
+    if not spec and len(imgs) != len(paras):
         sys.exit(f"{len(paras)} scenes in script.txt but {len(imgs)} images (s01, s02, ...)")
     dur = float(run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", audio]).strip())
 
@@ -203,10 +211,22 @@ def main(ep, render=True):
         off += len(p)
     marks = sorted(scene_start + ev_times + [end])
     gaps = [(a, b) for a, b in zip(marks, marks[1:]) if b - a > MAX_STILL]
-    for a, b in gaps:
+    for a, b in ([] if spec else gaps):
         print(f"RHYTHM: nothing changes visually from {a:.1f}s to {b:.1f}s ({b - a:.1f}s): add a pop/swap/punch")
 
     img_html, cap_html, js = [], [], []
+    if spec:
+        for i, sp in enumerate(spec["scenes"]):
+            a = scene_start[i] - (FADE / 2 if i else 0)
+            b = scene_end[i] + (FADE / 2 if i < len(paras) - 1 else 0)
+            sw = [(w[0], w[1]) for w in W if w[3] == i]
+            sh, sj, se = data_story.scene(sp, i, a, b, FADE, sw)
+            img_html.append(sh); js += sj; ev_times += se
+            if i:
+                js.append(f'tl.fromTo("#sc{i}",{{opacity:0}},{{opacity:1,duration:{FADE},ease:"none"}},{a:.2f});')
+        marks = sorted(scene_start + ev_times + [end])
+        for a, b in [(x, y) for x, y in zip(marks, marks[1:]) if y - x > MAX_STILL]:
+            print(f"RHYTHM: nothing changes visually from {a:.1f}s to {b:.1f}s ({b - a:.1f}s)")
     for i, p in enumerate(imgs):
         a = scene_start[i] - (FADE / 2 if i else 0)
         b = scene_end[i] + (FADE / 2 if i < len(imgs) - 1 else 0)
@@ -218,7 +238,7 @@ def main(ep, render=True):
         js.append(f'tl.fromTo("#img{i}",{{scale:{s0},x:{x0}}},{{scale:{s1},x:{x1},duration:{d:.2f},ease:"none"}},{a:.2f});')
         if i:  # crossfade over the previous scene (higher z-index); first scene is visible at 0 s
             js.append(f'tl.fromTo("#img{i}",{{opacity:0}},{{opacity:1,duration:{FADE},ease:"none"}},{a:.2f});')
-    for gi, g in enumerate(groups):
+    for gi, g in enumerate([] if spec and spec.get("captions") is False else groups):
         gs = max(g[0][1] - 0.05, 0.1)
         nxt = groups[gi + 1][0][1] - 0.04 if gi + 1 < len(groups) else end
         ge = max(g[-1][2], min(nxt, gs + HOLD))
@@ -241,6 +261,7 @@ html,body{{width:1920px;height:1080px;overflow:hidden;background:#111}}
 img.clip.pop{{position:absolute;top:230px;width:560px;height:560px;object-fit:contain}}
 img.clip{{position:absolute;left:0;top:0;width:1920px;height:1080px;object-fit:cover}}
 .grp{{position:absolute;left:0;width:1920px;bottom:110px;text-align:center;overflow:visible;font-family:Poppins,sans-serif;font-weight:700;font-size:78px;color:#fff;-webkit-text-stroke:3px #111;paint-order:stroke fill;z-index:50}}
+{data_story.CSS if spec else ""}
 </style></head><body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="{end:.2f}" data-width="1920" data-height="1080">
 <div id="stage">
@@ -269,7 +290,7 @@ tl.seek(0);
         print("ERROR", x["code"], x["message"][:200])
     if errs:
         sys.exit("check failed")
-    print(f"check ok: {len(imgs)} scenes, {len(groups)} caption groups, {end:.1f}s")
+    print(f"check ok: {len(paras)} scenes, {len(groups)} caption groups, {end:.1f}s")
     if render:
         run([HF, "render", "--output", str(ep / "final.mp4")], cwd=hf, env=env)
         print("rendered", ep / "final.mp4")
