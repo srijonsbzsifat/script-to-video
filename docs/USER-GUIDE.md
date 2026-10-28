@@ -94,3 +94,29 @@ Docs Claude reads: `N:\AI\aitrends-2d-studio\docs\make-2d-video\` (a local copy,
 - Look at frames and a pause between words in the final audio before saying "done".
 - Never state a number you did not source. Examples are labelled "example data".
 - Test episodes stay local (gitignored). Text-only examples live in `examples/`.
+
+---
+
+## Changes after the first cut
+Everything is in files (`script.txt`, `takes.json`, `scenes.json`, the studio project), so a change redoes only what it touches. Start a **fresh chat**, say "read `episodes/<name>/NOTES.md`", then ask.
+
+| You say | What Claude does | Cost |
+|---|---|---|
+| "Slower narration, 10%" | `python -I tools/slow_narration.py episodes/<name> --factor 0.9`, then rebuild | no quota; instant |
+| "A calmer, slower read of scene 5" | `flow_narrate_redo` on the take that holds scene 5 (see `takes.json`), same voice, then rejoin | 1 Gemini request |
+| "Scene 8 wording changed" | edit `script.txt`, `flow_narrate_redo` that take with the new text | 1 request |
+| "Different voice for everything" | `flow_narrate_script` again with the new voice | 3-4 requests |
+| "Music softer / different" | `flow_music_edit` in the same session, or a new `flow_music_bed` | about 1.5 min per track, no limit found |
+| Mode A: "new picture for scene 4" | regenerate that one image in Flow, rebuild | free |
+| Mode B: "make scene 6 a line chart" | edit scene 6 in `scenes.json`, rebuild | small |
+| Mode C: "closer face in shot 9" | edit that shot's file, preview `--from --to` at half scale, then re-render | tokens for one shot |
+
+**After any audio change the clock moves.** Modes A and B re-time everything on the next `build.py` run by themselves (local whisper, aligned to your script). Mode C: run `python -I tools/to_studio.py episodes/<name>` again (it keeps your written shots, saves the old timing, re-times) and it moves every shot, music section and sound cue with `tools/retime_shots.py` (tested: a 10% slower read scaled all 12 shots by exactly 1.1 and kept them contiguous). Then re-render (free, about 15 minutes for 6 minutes of video).
+
+## Limits, measured
+| Thing | Limit |
+|---|---|
+| Gemini voice, one request | 8,192 input tokens and 16,384 output tokens, so a take could be about 8-10 minutes; we use 1,800-character takes (about 100 s) for steady quality; 1,608 characters in one take was complete (97% word match) |
+| Gemini free tier | rate limited per key and per model (earlier measured on the 2.5 model: 3 requests a minute, about 10 a day). Several keys + 4 voice models rotate automatically; with keys from several Google accounts a long video per day is no problem |
+| Flow Music track | 1:54 to 4:55 per track, whatever length is asked; no generation limit found (the number beside the diamond is progress points, not credits); about 1.5 minutes per track |
+| Cinema-2D | about 7% of a Claude Pro 5-hour window per 30 s of video; work in 60-90 s chapters |

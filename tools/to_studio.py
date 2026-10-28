@@ -9,6 +9,7 @@ Creates <studio>/projects/NAME with timeline + draft shot list. Claude then writ
 docs/USER-GUIDE.md, mode C) and renders with the studio's render.mjs / audio/mix.py.
 """
 import argparse, json, os, pathlib, subprocess, sys
+from shutil import copy as shutil_copy
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
@@ -53,13 +54,26 @@ def main():
     if not proj.exists():
         py("tools/new_project.py", "--name", slug, "--voice", audio, "--aspect", a.aspect, "--resolution", a.res,
            "--style", a.style, "--title", a.title or slug.replace("-", " ").title())
+    for old_v in (proj / "input").glob("voiceover.*"):  # a changed narration (slower, re-recorded take): use the new file
+        if old_v.suffix == audio.suffix and old_v.read_bytes() != audio.read_bytes():
+            shutil_copy(audio, old_v)
+    tl = proj / "timeline" / "words.json"
+    if tl.exists():                                     # keep the previous timing so retime_shots.py can move the shots
+        import shutil as _sh
+        _sh.copy(tl, proj / "timeline" / "words.prev.json")
     json.dump({"words": out}, open(proj / "input" / "words.json", "w"))
     py("tools/parse_script.py", "--project", f"projects/{slug}", "--script", f"projects/{slug}/input/words.json")
+    had_story = (proj / "story" / "bible.md").exists()
+    shots_backup = (proj / "story" / "shots.json").read_bytes() if had_story and (proj / "story" / "shots.json").exists() else None
     py("tools/beats.py", "--project", f"projects/{slug}")
+    if shots_backup:                                    # beats.py rewrote the draft: put our written shot list back, then re-time it
+        (proj / "story" / "shots.json").write_bytes(shots_backup)
+        subprocess.run([sys.executable, str(HERE / "tools" / "retime_shots.py"), str(proj)], check=True)
 
     cfgf = proj / "config.json"
     cfg = json.load(open(cfgf, encoding="utf-8"))
     cfg["style"] = a.style
+    cfg["duration"] = round(float(build.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", audio]).strip()), 3)
     music = next((p for e in ("mp3", "wav", "m4a") for p in ep.glob(f"music.{e}")), None)
     if music:
         import shutil

@@ -24,7 +24,7 @@ Rendering runs on your own computer. Mode A pictures, Gemini narration and Flow 
 **Your computer.** Windows, macOS or Linux (tested on Windows 11). Node.js 18+, Python 3.9+, ffmpeg (a recent build; the whisper filter needs ffmpeg 8+ for mode A/B timing), about 3 GB free disk. A GPU is optional but makes Cinema-2D rendering about 3-5 times faster (an RTX 5070 renders 1080p at about 10 fps; a 6-minute video renders in roughly 15-45 minutes).
 
 **Free accounts and tools (only for what you use).**
-- **Google Flow** account + the [flow-mcp](https://github.com/srijonsbzsifat/flow-mcp) tool: scene images (mode A, free), Gemini narration voices and **Flow Music** soft music beds (any mode). The Gemini narration key is free (Google AI Studio); the free tier allows about 10 requests a day, so a long script is narrated over a couple of days or with another voice tool (ElevenLabs etc.: just drop the audio file in).
+- **Google Flow** account + the [flow-mcp](https://github.com/srijonsbzsifat/flow-mcp) tool: scene images (mode A, free), Gemini narration voices and **Flow Music** soft music beds (any mode). The Gemini narration key is free (Google AI Studio). Free keys are rate limited, so **add one key per Google account** in Flow Studio (Voice tab, "Add key"): when one is used up or rate limited the next is used automatically, then the next voice model. Keys are saved only on your computer and never go through chat. (ElevenLabs etc. also work: just drop the audio file in.)
 - A local whisper model (`ggml-small.en.bin`, about 500 MB) for word timing. `setup.py` tells you the one command to get it. English narration only for now.
 
 ---
@@ -60,9 +60,9 @@ Use a **fresh chat for each step marked 🆕** (see section 4). Save what each s
 
 **Step 3 🆕 Fact check.** New chat: "Here is a script and its fact list. For each number and claim say whether it is well established, uncertain or wrong. Do not invent sources." Fix `script.txt`. Never publish a number you did not check.
 
-**Step 4 Narration.** In a chat in the repo: "Narrate `episodes/<name>/script.txt` with Gemini, voice Charon, calm explainer, save as `narration.wav`." The tool takes the whole script (up to about 12,000 characters), splits it at sentence ends into takes of about 1,800 characters (1.5-2 minutes each) and joins them: **a 6-minute script is 3-4 requests** of the free tier's roughly 10 a day, so about two videos a day. Tested: 1,608 characters in one take = 100 s, complete, about 3 words per second. (Or record yourself, or use ElevenLabs and drop the file in.)
+**Step 4 Narration (hands-off).** In a chat in the repo: "Narrate `episodes/<name>/script.txt` with Gemini, voice Charon, calm explainer pace." Claude uses `flow_narrate_script`: one scene per paragraph, scenes grouped into takes of about 1,800 characters (1.5-2 minutes), every take in the **same voice and delivery**, keys and voice models rotating when one is limited. It saves every take, joins them into `narration.m4a`, loudness-matches them, and **re-records once any take that was read much faster or slower than the rest** (measured: one take came out at 2.52 words per second against 1.82; asking for "slower" brought it to 1.80). It writes `takes.json` (which scenes are in which take). A 6-minute script is 3-4 requests. Copy `narration.m4a` into the episode folder. (Or record yourself, or use ElevenLabs and drop the file in.)
 
-**Step 5 Music.** "Make a soft instrumental piano bed with Flow Music, no drums, for a 6-minute video, and save it as `music.mp3` in the episode." Flow Music tracks come out **2-3.5 minutes whatever length you ask for** (asking for 6 minutes gave 2:57), so for 5-7 minutes Claude makes 2-3 tracks and joins them with `tools/join_music.py` (loudness-matched, crossfaded, faded in and out). It is mixed about 15 dB under the voice.
+**Step 5 Music (hands-off).** "Make a soft instrumental piano bed with Flow Music for a 6-minute video, save it as `music.mp3` in the episode." Claude uses `flow_music_bed`: it makes a track, asks the Producer in the **same session** for more versions of the same piece until there is enough, matches their loudness, crossfades them and fades in and out, giving one file of exactly the video's length (tested: 360 s from 3 tracks, about 4 minutes of waiting, steady level, no jumps at the joins). It is mixed about 15 dB under the voice.
 
 **Step 6 Pick the mode and look.** Use the table at the top. Ask Claude to "show me the options" for Mode C styles (dark: dusk, midnight, golden, neon, storybook; light: **daylight, paper, candy**) or to design a new one from a screenshot. Details, with copy-paste prompts for each mode: **[docs/USER-GUIDE.md](docs/USER-GUIDE.md)**.
 
@@ -76,6 +76,12 @@ Use a **fresh chat for each step marked 🆕** (see section 4). Save what each s
 **Step 9 Review before "done".** Ask Claude to: view frames at every scene change, check the audio level in a pause between words (the music should be quiet but present), check numbers on screen against the script, and run the colour lint (mode C). Watch it yourself once at full speed.
 
 **Step 10 Polish and publish.** Join chapters, captions, intro/outro and loudness in any editor (FilmCraft, DaVinci, CapCut). Make the thumbnail from a clean frame. Add "example data" labels where numbers are illustrative.
+
+**Step 11 Changes after you have watched it.** Open a fresh chat and say what you want; everything is kept in files so nothing is redone from scratch. See "Changes after the first cut" in [docs/USER-GUIDE.md](docs/USER-GUIDE.md). Examples:
+- "Make the narration 10% slower." (instant, no quota: `tools/slow_narration.py`; or a re-recorded, calmer read with `flow_narrate_redo`)
+- "Scene 7 sounds rushed and the text is wrong: here is the new line." (re-records only that take)
+- "Replace the picture in scene 4 / make the chart in scene 6 a line chart / give shot 9 a closer face." (rebuilds only that scene's visual)
+- "The music is too busy: make it softer." (`flow_music_edit` or a new bed)
 
 ---
 
