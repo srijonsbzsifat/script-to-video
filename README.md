@@ -75,7 +75,7 @@ Use a **fresh chat for each step marked 🆕** (see section 4). Save what each s
 
 **Step 9 Review before "done".** Ask Claude to: view frames at every scene change, check the audio level in a pause between words (the music should be quiet but present), check numbers on screen against the script, and run the colour lint (mode C). Watch it yourself once at full speed.
 
-**Step 10 Polish and publish.** Join chapters, captions, intro/outro and loudness in any editor (FilmCraft, DaVinci, CapCut). Make the thumbnail from a clean frame. Add "example data" labels where numbers are illustrative.
+**Step 10 Polish and publish.** Join chapters, captions, intro/outro and loudness in any editor (FilmCraft, DaVinci, CapCut). Make the thumbnail from a clean frame. Add "example data" labels where numbers are illustrative. **Caption files for upload:** with the FINAL video exported, run `python -I tools/make_srt.py episodes/<name> <final video>`; it writes `<name>.en.srt` (YouTube) and `<name>.en_US.srt` (Facebook, which wants the locale in the file name), using the exact script text and the final video's clock, so intros and joins are already accounted for. Re-run it whenever the video is re-cut.
 
 **Step 11 Changes after you have watched it.** Open a fresh chat and say what you want; everything is kept in files so nothing is redone from scratch. See "Changes after the first cut" in [docs/USER-GUIDE.md](docs/USER-GUIDE.md). Examples:
 - "Make the narration 10% slower." (instant, no quota: `tools/slow_narration.py`; or a re-recorded, calmer read with `flow_narrate_redo`)
@@ -114,7 +114,7 @@ docs/prompts/                 idea generator and script writer prompts
 docs/build-reference.md       build.py details (episode folder, script tags)
 skills/video-workflow/        the guideline Claude follows (rules, lessons, music, engines)
 styles/                       style cards (stickman, data story, cinema-2d) + light/colour style packs
-tools/                        setup, hand-off, studio runner, colour lint, whisper timing
+tools/                        setup, hand-off, studio runner, colour lint, whisper timing, SRT captions
 plugins/aitrends-2d-studio/   the Cinema-2D plugin (by aiTrends, included unmodified, see THIRD_PARTY.md)
 examples/                     text-only sample scripts and prompts
 episodes/, studio/            your work and the installed studio (not committed)

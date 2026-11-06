@@ -61,8 +61,9 @@ Characters, sets, faces, diagrams and 3D shots drawn frame by frame. Free to ren
 1. `python -I tools/to_studio.py episodes/my-episode --style daylight` creates `projects/my-episode` in the studio: voiceover, word times from our local whisper, a draft shot list, your music bed, and a brief.
 2. Writes the story notes and shots (about 15-25 shots per minute), sets and scenes, one batch of 8-12 at a time, looking at contact sheets.
 3. Runs `lint_style_colors.py`, then `render.mjs --styles ...` to compare looks, shows you the grid.
-4. Previews 30 s, you approve, final render, `audio/mix.py` mixes the kit's sound effects with your music, output in `projects/my-episode/out/`.
-Docs Claude reads: `N:\AI\aitrends-2d-studio\docs\make-2d-video\` (a local copy, not in git).
+4. Previews 30 s, you approve, final render, `audio/mix.py` mixes the kit's sound effects with your music, output in `projects/my-episode/out/`. Footsteps, doors, cloth and impacts can use real recordings from `assets/foley/` (a sound cue name may be an absolute .wav path).
+5. Audits the final file: `python -I tools/audit_video.py <final.mp4> --shots projects/my-episode/story/shots.json` (loudness, frozen windows, silent gaps, pops that are not cuts, plus a contact sheet). This tool works on any mp4 from any mode; `to_studio.py` prints the exact command.
+Docs Claude reads: `studio/docs/make-2d-video/` (installed by setup_studio.py).
 
 **Long videos:** split the script into 60-90 s chapters (`my-episode-ch1`, `-ch2`...), build one per Claude Pro window, join in FilmCraft. Reusing the same sets and cast makes later chapters cheaper, because most of the cost is writing new scenes.
 

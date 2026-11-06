@@ -1,6 +1,6 @@
 """Add our style packs (styles/cinema2d/packs/*.json) to an installed aiTrends-style 2D studio kit.
 
-  python -I tools/install_cinema_styles.py N:/AI/aitrends-2d-studio
+  python -I tools/install_cinema_styles.py ./studio
 
 Appends one marked block to <studio>/engine/styles.js (replaced on re-run, the original styles are untouched).
 A pack lists the 5 core moods (day golden dusk night storm); the other three are derived:

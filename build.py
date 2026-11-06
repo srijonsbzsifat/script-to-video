@@ -9,7 +9,8 @@ EPISODE_DIR holds:
   script.txt              the exact narration text; a BLANK LINE starts a new scene
   s01.png, s02.png, ...   one image per scene, in script order (png/jpg/jpeg/webp/svg)
 Output: EPISODE_DIR/final.mp4 (+ EPISODE_DIR/hf/ project, timings.json)
-Timing: local whisper -> words aligned to the real script (ASR errors don't matter).
+Timing: local whisper -> words aligned to the real script (ASR errors don't matter); scene starts are then snapped to the
+        narration's speech onsets (silencedetect), because whisper word times drift 1-2 s around pauses.
 """
 import difflib, json, os, pathlib, re, shutil, subprocess, sys
 
@@ -59,6 +60,59 @@ def align(script_words, asr):
     for i in range(1, len(t)):          # monotonic
         t[i] = max(t[i], t[i - 1] + 0.01)
     return t
+
+
+def snap_starts(st, paras, audio, dur):
+    """Whisper word times can be 1-2 s off around pauses, which shows with short scenes. Put each scene start on a real
+    speech onset of the narration (ffmpeg silencedetect), choosing onsets in order near the whisper / pro-rata estimate,
+    and re-time the words of each scene linearly between its anchors. A boundary with no onset nearby keeps the estimate."""
+    err = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(audio), "-af", "silencedetect=noise=-45dB:d=0.2", "-f", "null", "-"],
+                         capture_output=True, text=True, encoding="utf-8", errors="replace").stderr
+    sil = list(zip(map(float, re.findall(r"silence_start: ([\d.]+)", err)), map(float, re.findall(r"silence_end: ([\d.]+)", err))))
+    n = len(paras)
+    sil = [(a, b) for a, b in sil if a > 0.05 and b < dur - 0.1]          # pauses inside the speech
+    if len(sil) < n - 1:
+        return st                                                         # fewer pauses than scene breaks: keep whisper
+    ends = [0.0] + [b for _, b in sil]                                    # speech runs ends[k] .. starts[k]
+    starts = [a for a, _ in sil] + [dur]
+    first = [sum(len(q) for q in paras[:i]) for i in range(n)]
+    chars = [sum(len(w) + 1 for w in q) for q in paras]
+
+    def sp(t):                                                            # seconds of speech before time t
+        return sum(max(0.0, min(t, b) - a) for a, b in zip(ends, starts))
+    rate = sp(dur) / sum(chars)                                           # speech seconds per character
+    cost = lambda i, t0, t1: (sp(t1) - sp(t0) - chars[i] * rate) ** 2 / (0.5 + 0.15 * chars[i] * rate) ** 2
+    # candidates for scene i's start: the speech onsets near the whisper time (cheap), or the whisper time itself (mid-phrase break)
+    cand = [[(0.0, 0.0)]]
+    for i in range(1, n):
+        w = st[first[i]]
+        mid = not any(a - 0.6 <= w <= b + 0.4 for a, b in sil)           # a scene never starts on a phrase's last 0.6 s: that is its pause
+        cand.append([(o, 0.3 * (o - w) ** 2) for o in ends[1:] if abs(o - w) <= 2.5] + ([(w, 0.6)] if mid else []))
+    best = [{0: (0.0, None)}]
+    for i in range(1, n):          # monotone choice, scenes at least 0.3 s long; cost = speech time vs what the text length predicts
+        row = {}
+        for k, (t, pen) in enumerate(cand[i]):
+            opts = [(pc + cost(i - 1, cand[i - 1][j][0], t), j) for j, (pc, _) in best[-1].items() if cand[i - 1][j][0] + 0.3 <= t]
+            if opts:
+                c, j = min(opts)
+                row[k] = (c + pen, j)
+        best.append(row or {len(cand[i]) - 1: (1e9, min(best[-1], key=lambda j: best[-1][j][0]))})
+    fin = {k: pc + cost(n - 1, cand[n - 1][k][0], dur) for k, (pc, _) in best[-1].items()}
+    k = min(fin, key=fin.get)
+    anchor = [0.0] * n
+    for i in range(n - 1, -1, -1):
+        anchor[i] = cand[i][k][0]
+        k = best[i][k][1] if best[i][k][1] is not None else 0
+    anchor.append(dur)
+    out = list(st)
+    for i in range(n):
+        lo = st[first[i]]
+        hi = st[first[i + 1]] if i + 1 < n else max(st[-1] + 0.5, lo + 0.5)
+        for j in range(first[i], first[i] + len(paras[i])):
+            out[j] = anchor[i] + (st[j] - lo) / (hi - lo) * (anchor[i + 1] - anchor[i])
+    for i in range(1, len(out)):
+        out[i] = max(out[i], out[i - 1] + 0.01)
+    return out
 
 
 def parse_script(ep):
@@ -136,6 +190,7 @@ def main(ep, render=True):
     asr = json.load(open(tdir / "words.json", encoding="utf-8"))
     words = [w for p in paras for w in p]
     st = align(words, asr)
+    st = snap_starts(st, paras, audio, dur)
     end = dur + 0.4
     W = []                                # (text, start, end, scene)
     k = 0

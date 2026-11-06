@@ -49,10 +49,11 @@ need(" whisper " in flt, "that ffmpeg includes the `whisper` filter (this is the
 # reuse a whisper model from any known folder (same search the builder uses)
 spec = importlib.util.spec_from_file_location("whisper_words", HERE / "tools" / "whisper_words.py")
 ww = importlib.util.module_from_spec(spec); spec.loader.exec_module(ww)
-models = ww.find_models_dir()
-have_model = (pathlib.Path(models) / "ggml-small.en.bin").is_file()
-need(have_model, f"whisper model ggml-small.en.bin already present in {models}" if have_model else "whisper model ggml-small.en.bin (looked in WHISPER_MODELS, ~/whisper-models, ~/.cache/whisper*, ~/whisper.cpp/models, FilmCraft's folder)",
-     f'mkdir -p "{models}" && curl -L -o "{models}/ggml-small.en.bin" https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin   (or set WHISPER_MODELS to the folder you already have)')
+WF = f"ggml-{os.environ.get('WHISPER_MODEL', 'small.en')}.bin"   # kit: WHISPER_MODEL=small|medium for Bengali
+models = ww.find_models_dir(WF)
+have_model = (pathlib.Path(models) / WF).is_file()
+need(have_model, f"whisper model {WF} already present in {models}" if have_model else f"whisper model {WF} (looked in WHISPER_MODELS, ~/whisper-models, ~/.cache/whisper*, ~/whisper.cpp/models, FilmCraft's folder)",
+     f'mkdir -p "{models}" && curl -L -o "{models}/{WF}" https://huggingface.co/ggerganov/whisper.cpp/resolve/main/{WF}   (or set WHISPER_MODELS to the folder you already have)')
 if not ok:
     sys.exit("\nfix the MISSING items above (only those), then re-run setup.py")
 

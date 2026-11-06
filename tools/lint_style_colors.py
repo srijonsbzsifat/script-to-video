@@ -1,6 +1,6 @@
 """Flag hard-coded neutrals in studio scene files that break light/colour styles.
 
-  python -I tools/lint_style_colors.py N:/AI/aitrends-2d-studio/projects/NAME
+  python -I tools/lint_style_colors.py studio/projects/NAME
 
 Scenes must take colours from mood()/S()/S().ui so a style switch re-themes the video. Data hues (a red wave, a
 blue wave) are fine; white, black and near-neutral greys/navy hard-coded in a scene are not. Exit code 1 if any.

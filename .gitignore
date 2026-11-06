@@ -14,3 +14,13 @@ episodes/*
 
 # the installed cinema-2D studio (downloaded by tools/setup_studio.py)
 studio/
+
+# PC-only channel work and tools: stay on disk, not in git
+channel/
+work/
+tests/
+tools/food_edit.py
+tools/food_verify.py
+tools/glass_edit.py
+tools/text_audit.py
+tools/yt_outliers.py

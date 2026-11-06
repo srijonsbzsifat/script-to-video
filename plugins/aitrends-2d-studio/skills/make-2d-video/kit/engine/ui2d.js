@@ -80,7 +80,28 @@ export function endScreen(g, t, o = {}) {
   cast.forEach((of, i) => { const k = ease.out(prog(t, 0.3 + i * 0.08, 0.7 + i * 0.08)); drawFigure(g, { x: E.W / 2 + (i - (n - 1) / 2) * gap, y: y0 + (1 - k) * 40, s: V(0.9, 1.05), facing: 1, outfit: of, pose: POSES.relaxed, expr: 'smile', alpha: k, rim: { color: rim, dir: [0, 1] } }); });
 }
 // Word-level captions (great for 9:16). Shows a 3–4 word phrase, current word highlighted.
+// Phrase captions (faceless-shorts look): config captionStyle.phrases = ["WHAT IF *YOU", ...], "*" marks the one yellow word.
+// Phrases consume E.words in order; a phrase shows whole from just before its first word until the next one starts.
+let _phr = null;
+function phraseList(o) {
+  if (_phr && _phr.src === o.phrases) return _phr.list;
+  const words = E.words, list = []; let k = 0;
+  for (const p of o.phrases) { const toks = p.trim().split(/\s+/), a = words[k], b = words[k + toks.length - 1]; if (!b) break; list.push({ s: a.start - 0.05, end: b.end, toks: toks.map(t => ({ txt: t.replace('*', ''), hi: t.includes('*') })) }); k += toks.length; }
+  list.forEach((c, i) => { const n = list[i + 1]; c.e = n ? (n.s - c.end > 0.7 ? c.end + 0.35 : n.s) : c.end + 0.35; });
+  _phr = { src: o.phrases, list }; return list;
+}
+function phraseCaption(g, t, o) {
+  const c = phraseList(o).find(c => t >= c.s && t < c.e); if (!c) return;
+  const { y = V(E.H - 150, E.H * 0.79), size = V(58, 74), color = '#ffffff', hi = S().ui.yellow || S().ui.gold } = o, strs = c.toks.map(w => w.txt.toUpperCase());
+  const w0 = strs.map(s => measure(g, s, size)).reduce((a, b) => a + b, 0) + size * 0.3 * (strs.length - 1), sz = size * Math.min(1, (E.W * 0.9) / w0);
+  const gap = sz * 0.3, widths = strs.map(s => measure(g, s, sz)), total = widths.reduce((a, b) => a + b, 0) + gap * (strs.length - 1), lt = t - c.s;
+  const pop = lt < 0.12 ? 0.88 + 0.12 * ease.out(lt / 0.12) : 1;
+  g.save(); g.translate(E.W / 2, y); g.scale(pop, pop); let x = -total / 2;
+  strs.forEach((s, k) => { text(g, s, x + widths[k] / 2, 0, { size: sz, color: c.toks[k].hi ? hi : color, stroke: sz * 0.2, strokeColor: 'rgba(0,0,0,.9)' }); x += widths[k] + gap; });
+  g.restore();
+}
 export function captions(g, globalT, o = {}) {
+  if (o.phrases) return phraseCaption(g, globalT, o);
   const words = E.words; if (!words.length) return; const { y = V(E.H - 150, E.H * 0.79), size = V(58, 74), max = 4, color = '#ffffff', hi = S().ui.gold } = o;
   let i = -1; for (let k = words.length - 1; k >= 0; k--) if (globalT >= words[k].start - 0.05) { if (globalT <= words[k].end + 0.35) i = k; break; } if (i < 0) return;
   const st = Math.floor(i / max) * max, group = words.slice(st, st + max); const strs = group.map(w => w.word.trim().toUpperCase());

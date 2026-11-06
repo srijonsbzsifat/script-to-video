@@ -1,0 +1,140 @@
+{
+ "id": "dark",
+ "name": "Strictly Dark",
+ "desc": "Channel dark mode: midnight navy world, near-white features, coral accent, plus blood/metal/bone tokens for science what-ifs.",
+ "ink": "#0a0c16",
+ "inkFar": "#232a40",
+ "feature": "#eef3ff",
+ "rimWidth": 4,
+ "ui": {
+  "card": "rgba(18,28,48,.94)",
+  "cardLine": "rgba(150,180,230,.25)",
+  "text": "#b4c6e4",
+  "sub": "#7f94b8",
+  "accent": "#ff6f61",
+  "gold": "#ffc66e",
+  "yellow": "#FFD43B",
+  "cream": "#fff1dc",
+  "blueprint": "#8fb8e8",
+  "bpBg": "#0b1324",
+  "good": "#5fd39a",
+  "blood": "#e0344a",
+  "metal": "#8392ae",
+  "bone": "#e8dcc4"
+ },
+ "grade": {
+  "contrast": 1.06,
+  "sat": 0.92,
+  "lift": [
+   0.0,
+   0.02,
+   0.07
+  ],
+  "gamma": [
+   0.94,
+   0.98,
+   1.06
+  ],
+  "gain": [
+   0.9,
+   0.96,
+   1.1
+  ],
+  "vignette": 0.6,
+  "grain": 0.05,
+  "bloom": 0.7
+ },
+ "moods": {
+  "day": {
+   "sky": [
+    "#141a3a",
+    "#2c3470",
+    "#5a5aa0"
+   ],
+   "ambient": "#1e2444",
+   "key": "#d8e2ff",
+   "rim": "#b8c8ff",
+   "wall": "#1c2040",
+   "floor": "#141730",
+   "dark": "#0a0c1c",
+   "practical": "#ffb868",
+   "grass": "#22433a",
+   "road": "#24263a",
+   "fog": "#3a4270"
+  },
+  "golden": {
+   "sky": [
+    "#1a1830",
+    "#3a2a50",
+    "#7a4a60"
+   ],
+   "ambient": "#1e2444",
+   "key": "#ffd2a8",
+   "rim": "#ffc8a0",
+   "wall": "#2c2440",
+   "floor": "#1e1a30",
+   "dark": "#0a0c1c",
+   "practical": "#ffc878",
+   "grass": "#22433a",
+   "road": "#24263a",
+   "fog": "#3a4270"
+  },
+  "dusk": {
+   "sky": [
+    "#141a3a",
+    "#2c3470",
+    "#5a5aa0",
+    "#c08aa0"
+   ],
+   "ambient": "#1e2444",
+   "key": "#ffd2a8",
+   "rim": "#ffc8a0",
+   "wall": "#2c2440",
+   "floor": "#1e1a30",
+   "dark": "#0a0c1c",
+   "practical": "#ffc878",
+   "grass": "#22433a",
+   "road": "#24263a",
+   "fog": "#3a4270"
+  },
+  "night": {
+   "sky": [
+    "#0a0e22",
+    "#161d44",
+    "#2a2f66"
+   ],
+   "ambient": "#1e2444",
+   "key": "#d8e2ff",
+   "rim": "#b8c8ff",
+   "wall": "#1c2040",
+   "floor": "#141730",
+   "dark": "#0a0c1c",
+   "practical": "#ffb868",
+   "grass": "#22433a",
+   "road": "#24263a",
+   "fog": "#3a4270"
+  },
+  "storm": {
+   "sky": [
+    "#0c1024",
+    "#1c2444",
+    "#2c3660"
+   ],
+   "ambient": "#1e2444",
+   "key": "#d8e2ff",
+   "rim": "#b8c8ff",
+   "wall": "#1c2040",
+   "floor": "#141730",
+   "dark": "#0a0c1c",
+   "practical": "#ffb868",
+   "grass": "#22433a",
+   "road": "#24263a",
+   "fog": "#3a4270"
+  }
+ },
+ "void": {
+  "bg": "#070a16",
+  "bg2": "#0e1530",
+  "line": "#9cc0f0"
+ }
+}

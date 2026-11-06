@@ -14,6 +14,8 @@ run both and align tokens to the segment words by character count.
 import argparse, json, os, re, subprocess, sys, tempfile
 
 TICKS = 254016000000
+# Mac/Bengali kit: WHISPER_MODEL (e.g. small, medium) overrides --model; WHISPER_LANG (e.g. bn) replaces the hard-coded English.
+LANG = os.environ.get("WHISPER_LANG", "en")
 def find_models_dir(name="ggml-small.en.bin"):
     """First known folder that already holds the model, so an existing one is reused and never re-downloaded."""
     home = os.path.expanduser("~")
@@ -25,18 +27,29 @@ def find_models_dir(name="ggml-small.en.bin"):
     return os.environ.get("WHISPER_MODELS") or os.path.join(home, "whisper-models")  # not found: where to put it
 
 
-MODELS = find_models_dir()
+MODELS = find_models_dir(f"ggml-{os.environ.get('WHISPER_MODEL') or 'small.en'}.bin")
 
 
 def run(media, model, maxlen, dest):
     m = model.replace("\\", "/").replace(":", r"\:")
-    af = f"whisper=model='{m}':language=en:format=json:destination={os.path.basename(dest)}" + (f":max_len={maxlen}" if maxlen else "")
+    af = f"whisper=model='{m}':language={LANG}:format=json:destination={os.path.basename(dest)}" + (f":max_len={maxlen}" if maxlen else "")
     env = dict(os.environ, MSYS_NO_PATHCONV="1")
     r = subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", media, "-vn", "-af", af, "-f", "null", "-"],
                        capture_output=True, text=True, env=env, cwd=os.path.dirname(dest))  # relative destination: no drive-colon escaping
     if r.returncode:
         sys.exit(r.stderr)
-    return [json.loads(l) for l in open(dest, encoding="utf-8") if l.strip()]
+    return [parse_line(l) for l in open(dest, encoding="utf-8") if l.strip()]
+
+
+def parse_line(l):
+    """ffmpeg's whisper filter does not escape quotes in the text ("the "Hatal Zone.""), so fall back to a regex."""
+    try:
+        return json.loads(l)
+    except ValueError:
+        m = re.fullmatch(r'\{"start":(-?\d+),"end":(-?\d+),"text":"(.*)"\}\s*', l)
+        if not m:
+            raise
+        return {"start": int(m[1]), "end": int(m[2]), "text": m[3].replace('"', "'")}
 
 
 def main():
@@ -45,7 +58,7 @@ def main():
     a.add_argument("--model", default="small.en")
     a.add_argument("--out", default=".")
     o = a.parse_args()
-    model = os.path.join(MODELS, f"ggml-{o.model}.bin")
+    model = os.path.join(MODELS, f"ggml-{os.environ.get('WHISPER_MODEL') or o.model}.bin")
     if not os.path.exists(model):
         sys.exit(f"missing {model}")
     os.makedirs(o.out, exist_ok=True)
@@ -70,7 +83,7 @@ def main():
         a_["end"] = min(a_["end"], b_["start"]) if b_["start"] >= a_["start"] else a_["end"]
 
     json.dump(words, open(os.path.join(o.out, "words.json"), "w", encoding="utf-8"), indent=1)
-    tr = {"language": "en", "speakers": [{"name": "Speaker 1"}],
+    tr = {"language": LANG, "speakers": [{"name": "Speaker 1"}],
           "words": [{"text": w["text"], "start": round(w["start"] * TICKS), "end": round(w["end"] * TICKS), "speaker": 0} for w in words]}
     json.dump(tr, open(os.path.join(o.out, "transcript.json"), "w", encoding="utf-8"))
     print(len(words), "words;", " ".join(w["text"] for w in words)[:300])

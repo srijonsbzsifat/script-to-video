@@ -65,6 +65,7 @@ Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, as
 - Sound map per event: slam (word), pop (card/chip), whoosh/glitch (cut), marker (highlight/draw), strike, stamp, tick (counter, only on value change, max 12/s), boom + shimmer (key number), click/ping/send (UI).
 - At most ~3 sounds at once; leave near-silence before the biggest hit.
 - Narration always wins: mix effects lighter when a voiceover is present.
+- Real foley (footsteps on wood/concrete/grass/carpet, doors, cloth, impacts in wood/metal/glass/punch; CC0): `assets/foley/` (README has the names). Cinema-2D only: an sfx cue `name` may be an absolute .wav path. The faceless-shorts kit styles and modes A/B mix their own code-made cues and cannot take files, so keep those synthesized.
 
 ## 6. Pipeline steps (every episode)
 1. Brief: channel, style card, format (16:9 long / 9:16 short), length, voice.
@@ -74,7 +75,7 @@ Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, as
 5. Assets: images from Flow (all images before any video), or code graphics.
 6. Build (`python -I build.py episodes/<name>`), then LOOK at frames at each beat and measure audio.
 7. Iterate by scene description; 3 variations for the hook if unsure.
-8. Final: FilmCraft for joins, cuts, loudness; captions last (type chosen first: English/Bangla/both, animated + highlight colour).
+8. Final: FilmCraft for joins, cuts, loudness; captions last (type chosen first: English/Bangla/both, animated + highlight colour). Then, always, the upload caption files from the exported final video: `python -I tools/make_srt.py episodes/<name> <final.mp4>` -> `<name>.en.srt` (YouTube) and `<name>.en_US.srt` (Facebook). Re-run after any re-cut.
 9. Vertical version: render again at 9:16 from the same timeline, not a crop.
 10. Save any new look as a style card.
 
@@ -83,6 +84,7 @@ Cloning a look: take 1-3 screenshots of the reference, pick the nearest card, as
 - [ ] Every number/fact on screen checked; examples labelled
 - [ ] Text readable at phone size; nothing clipped at 9:16 safe areas
 - [ ] Audio: narration audible at the end, effects not louder than voice, no silent gaps by accident
+- [ ] `python -I tools/audit_video.py FINAL.mp4 [--shots shots.json]` run on the final file, ISSUES at 0 or each one explained, contact sheet looked at (any mode, any Short or long video; it measures LUFS/peak, frozen windows, silent gaps, and pops that are not cuts when given the cuts)
 - [ ] Style consistent with the card; no stray elements from another style
 - [ ] No third-party logos, characters or copied art
 
@@ -129,3 +131,12 @@ Three ways to turn narration into video; the full how-to with copy-paste prompts
 - **Music:** `flow_music_bed` makes an exact-length bed hands-off (same session, loudness matched, crossfaded). Tracks are 1:54-4:55; the Producer ignores requested length. `tools/join_music.py` is the manual version.
 - **Consistency checklist (automatic):** same voice/style per take, per-take loudness, pace outlier fix, same-session music with matched loudness, fades. Still manual: listen once at full speed.
 - **Changes after the cut:** `tools/slow_narration.py` (instant), `flow_narrate_redo`, `tools/retime_shots.py` (Cinema-2D clock), rebuild. See `docs/USER-GUIDE.md`.
+
+## 13. Shorts caption standard (decided 2026-11-06, use for every Short)
+Phrase captions, the faceless-shorts look: a whole phrase appears at once (never word by word), 1-3 words in the faceless-shorts kit styles and up to 5 in Cinema-2D, ONE yellow key word, near-white text with a thick dark outline, a very short pop (0.12 s) of the whole phrase. Keep the project's own size and placement (Cinema-2D dark: size 76, y 1540).
+- **Chunking:** split at natural pauses and commas, 3-4 words typical (a 5-word phrase is fine when it reads as one unit). The yellow word is the one that carries the meaning ("for a whole *DAY"), not the longest word. A phrase may have no yellow word when the next one carries it.
+- **Cinema-2D:** put the phrases in `config.json` `captionStyle.phrases` (`"FOR A *DAY?"`, `*` marks the yellow word) next to `size`, `y`, `color`. Phrases consume `timeline/words.json` in order, so the tokens must equal it exactly or the captions drift: check `python -I -c "import json;P=json.load(open('config.json'))['captionStyle']['phrases'];w=[x['word'].strip().upper() for x in json.load(open('timeline/words.json'))['words']];print([t.replace('*','') for p in P for t in p.split()]==w)"` from the project folder. Engine: `phraseCaption()` in `ui2d.js` (also patched into `plugins/aitrends-2d-studio/.../kit/engine/ui2d.js`, so a re-install keeps it); the yellow comes from the style's `ui.yellow` token (#FFD43B in the dark pack, falls back to `gold`). Without `phrases` the old word-by-word captions run (long-form).
+- **faceless-shorts kits:** use the per-line `caps` field (`"WHAT IF *YOU | SWALLOW *GUM?"`), same rules.
+- **Modes A/B (`build.py`, HyperFrames):** not ported yet; they still use the 3-word animated captions.
+- **Check:** tile frames across the phrases and look at the first, a long one and the last; remember the SRT for upload is separate (`make_srt.py`). Reference build: `studio/projects/pain-day-phrase`, `episodes/pain-day/`.
+
